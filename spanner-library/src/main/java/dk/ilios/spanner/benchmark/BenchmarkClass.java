@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -91,7 +92,7 @@ public final class BenchmarkClass {
     public BenchmarkClass(Class<?> benchmarkClass, Collection<Method> methods) throws InvalidBenchmarkException {
 
         // Initialize Benchmark class
-        this.classReference = checkNotNull(benchmarkClass);
+        this.classReference = benchmarkClass;
         validateBenchmarkClass(classReference);
         try {
             classInstance = benchmarkClass.newInstance();
@@ -222,11 +223,11 @@ public final class BenchmarkClass {
     }
 
 
-    ImmutableSet<Method> beforeExperimentMethods() {
+    Set<Method> beforeExperimentMethods() {
         return Reflection.getAnnotatedMethods(classReference, BeforeExperiment.class);
     }
 
-    ImmutableSet<Method> afterExperimentMethods() {
+    Set<Method> afterExperimentMethods() {
         return Reflection.getAnnotatedMethods(classReference, AfterExperiment.class);
     }
 

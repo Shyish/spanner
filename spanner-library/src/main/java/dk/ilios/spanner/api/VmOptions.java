@@ -16,7 +16,6 @@
 
 package dk.ilios.spanner.api;
 
-import com.google.common.annotations.Beta;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -31,7 +30,6 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-@Beta
 public @interface VmOptions {
   String[] value() default {};
 }
