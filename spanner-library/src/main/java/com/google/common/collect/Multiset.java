@@ -17,7 +17,6 @@
 package com.google.common.collect;
 
 import com.google.common.annotations.GwtCompatible;
-import com.google.errorprone.annotations.CanIgnoreReturnValue;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -78,13 +77,13 @@ import javax.annotation.Nullable;
  * may wish to use {@link com.google.common.util.concurrent.AtomicLongMap}
  * instead. Note, however, that unlike {@code Multiset}, {@code AtomicLongMap}
  * does not automatically remove zeros.
- *
+ * 
  * <p>See the Guava User Guide article on <a href=
- * "https://github.com/google/guava/wiki/NewCollectionTypesExplained#multiset">
+ * "http://code.google.com/p/guava-libraries/wiki/NewCollectionTypesExplained#Multiset">
  * {@code Multiset}</a>.
  *
  * @author Kevin Bourrillion
- * @since 2.0
+ * @since 2.0 (imported from Google Collections Library)
  */
 @GwtCompatible
 public interface Multiset<E> extends Collection<E> {
@@ -127,7 +126,6 @@ public interface Multiset<E> extends Collection<E> {
    *     implementation does not permit null elements. Note that if {@code
    *     occurrences} is zero, the implementation may opt to return normally.
    */
-  @CanIgnoreReturnValue
   int add(@Nullable E element, int occurrences);
 
   /**
@@ -143,7 +141,6 @@ public interface Multiset<E> extends Collection<E> {
    * @return the count of the element before the operation; possibly zero
    * @throws IllegalArgumentException if {@code occurrences} is negative
    */
-  @CanIgnoreReturnValue
   int remove(@Nullable Object element, int occurrences);
 
   /**
@@ -159,7 +156,6 @@ public interface Multiset<E> extends Collection<E> {
    *     implementation does not permit null elements. Note that if {@code
    *     count} is zero, the implementor may optionally return zero instead.
    */
-  @CanIgnoreReturnValue
   int setCount(E element, int count);
 
   /**
@@ -182,7 +178,6 @@ public interface Multiset<E> extends Collection<E> {
    *     oldCount} and {@code newCount} are both zero, the implementor may
    *     optionally return {@code true} instead.
    */
-  @CanIgnoreReturnValue
   boolean setCount(E element, int oldCount, int newCount);
 
   // Views
@@ -234,7 +229,7 @@ public interface Multiset<E> extends Collection<E> {
    * snapshots. Note that this type is unrelated to the similarly-named type
    * {@code Map.Entry}.
    *
-   * @since 2.0
+   * @since 2.0 (imported from Google Collections Library)
    */
   interface Entry<E> {
 
@@ -385,9 +380,6 @@ public interface Multiset<E> extends Collection<E> {
    * always increment the count of the element, and the overall size of the
    * collection, by one.
    *
-   * <p>To both add the element and obtain the previous count of that element,
-   * use {@link #add(E, int) add}{@code (element, 1)} instead.
-   *
    * @param element the element to add one occurrence of; may be null only if
    *     explicitly allowed by the implementation
    * @return {@code true} always, since this call is required to modify the
@@ -397,7 +389,6 @@ public interface Multiset<E> extends Collection<E> {
    * @throws IllegalArgumentException if {@link Integer#MAX_VALUE} occurrences
    *     of {@code element} are already contained in this multiset
    */
-  @CanIgnoreReturnValue
   @Override
   boolean add(E element);
 
@@ -409,13 +400,9 @@ public interface Multiset<E> extends Collection<E> {
    * <b>may not</b> throw an exception in response to {@code element} being null
    * or of the wrong type.
    *
-   * <p>To both remove the element and obtain the previous count of that element,
-   * use {@link #remove(E, int) remove}{@code (element, 1)} instead.
-   *
    * @param element the element to remove one occurrence of
    * @return {@code true} if an occurrence was found and removed
    */
-  @CanIgnoreReturnValue
   @Override
   boolean remove(@Nullable Object element);
 
@@ -426,12 +413,11 @@ public interface Multiset<E> extends Collection<E> {
    * {@code c}, and only cares whether or not an element appears at all.
    * If you wish to remove one occurrence in this multiset for every occurrence
    * in {@code c}, see {@link Multisets#removeOccurrences(Multiset, Multiset)}.
-   *
+   * 
    * <p>This method refines {@link Collection#removeAll} to further specify that
    * it <b>may not</b> throw an exception in response to any of {@code elements}
-   * being null or of the wrong type.
+   * being null or of the wrong type. 
    */
-  @CanIgnoreReturnValue
   @Override
   boolean removeAll(Collection<?> c);
 
@@ -442,14 +428,13 @@ public interface Multiset<E> extends Collection<E> {
    * {@code c}, and only cares whether or not an element appears at all.
    * If you wish to remove one occurrence in this multiset for every occurrence
    * in {@code c}, see {@link Multisets#retainOccurrences(Multiset, Multiset)}.
-   *
+   * 
    * <p>This method refines {@link Collection#retainAll} to further specify that
    * it <b>may not</b> throw an exception in response to any of {@code elements}
    * being null or of the wrong type.
-   *
+   * 
    * @see Multisets#retainOccurrences(Multiset, Multiset)
    */
-  @CanIgnoreReturnValue
   @Override
   boolean retainAll(Collection<?> c);
 }

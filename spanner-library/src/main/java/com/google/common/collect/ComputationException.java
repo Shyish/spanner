@@ -24,7 +24,7 @@ import javax.annotation.Nullable;
  * Wraps an exception that occurred during a computation.
  *
  * @author Bob Lee
- * @since 2.0
+ * @since 2.0 (imported from Google Collections Library)
  */
 @GwtCompatible
 public class ComputationException extends RuntimeException {
@@ -34,6 +34,5 @@ public class ComputationException extends RuntimeException {
   public ComputationException(@Nullable Throwable cause) {
     super(cause);
   }
-
   private static final long serialVersionUID = 0;
 }

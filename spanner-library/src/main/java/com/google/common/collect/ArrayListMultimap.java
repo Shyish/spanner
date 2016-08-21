@@ -55,13 +55,13 @@ import java.util.Map;
  * multimap. Concurrent read operations will work correctly. To allow concurrent
  * update operations, wrap your multimap with a call to {@link
  * Multimaps#synchronizedListMultimap}.
- *
+ * 
  * <p>See the Guava User Guide article on <a href=
- * "https://github.com/google/guava/wiki/NewCollectionTypesExplained#multimap">
+ * "http://code.google.com/p/guava-libraries/wiki/NewCollectionTypesExplained#Multimap">
  * {@code Multimap}</a>.
  *
  * @author Jared Levy
- * @since 2.0
+ * @since 2.0 (imported from Google Collections Library)
  */
 @GwtCompatible(serializable = true, emulated = true)
 public final class ArrayListMultimap<K, V> extends AbstractListMultimap<K, V> {
@@ -87,7 +87,8 @@ public final class ArrayListMultimap<K, V> extends AbstractListMultimap<K, V> {
    * @throws IllegalArgumentException if {@code expectedKeys} or {@code
    *      expectedValuesPerKey} is negative
    */
-  public static <K, V> ArrayListMultimap<K, V> create(int expectedKeys, int expectedValuesPerKey) {
+  public static <K, V> ArrayListMultimap<K, V> create(
+      int expectedKeys, int expectedValuesPerKey) {
     return new ArrayListMultimap<K, V>(expectedKeys, expectedValuesPerKey);
   }
 
@@ -97,7 +98,8 @@ public final class ArrayListMultimap<K, V> extends AbstractListMultimap<K, V> {
    *
    * @param multimap the multimap whose contents are copied to this multimap
    */
-  public static <K, V> ArrayListMultimap<K, V> create(Multimap<? extends K, ? extends V> multimap) {
+  public static <K, V> ArrayListMultimap<K, V> create(
+      Multimap<? extends K, ? extends V> multimap) {
     return new ArrayListMultimap<K, V>(multimap);
   }
 
@@ -113,11 +115,10 @@ public final class ArrayListMultimap<K, V> extends AbstractListMultimap<K, V> {
   }
 
   private ArrayListMultimap(Multimap<? extends K, ? extends V> multimap) {
-    this(
-        multimap.keySet().size(),
-        (multimap instanceof ArrayListMultimap)
-            ? ((ArrayListMultimap<?, ?>) multimap).expectedValuesPerKey
-            : DEFAULT_VALUES_PER_KEY);
+    this(multimap.keySet().size(),
+        (multimap instanceof ArrayListMultimap) ?
+            ((ArrayListMultimap<?, ?>) multimap).expectedValuesPerKey :
+            DEFAULT_VALUES_PER_KEY);
     putAll(multimap);
   }
 
@@ -125,8 +126,7 @@ public final class ArrayListMultimap<K, V> extends AbstractListMultimap<K, V> {
    * Creates a new, empty {@code ArrayList} to hold the collection of values for
    * an arbitrary key.
    */
-  @Override
-  List<V> createCollection() {
+  @Override List<V> createCollection() {
     return new ArrayList<V>(expectedValuesPerKey);
   }
 
@@ -145,22 +145,24 @@ public final class ArrayListMultimap<K, V> extends AbstractListMultimap<K, V> {
    *     each distinct key: the key, number of values for that key, and the
    *     key's values
    */
-  @GwtIncompatible // java.io.ObjectOutputStream
+  @GwtIncompatible("java.io.ObjectOutputStream")
   private void writeObject(ObjectOutputStream stream) throws IOException {
     stream.defaultWriteObject();
+    stream.writeInt(expectedValuesPerKey);
     Serialization.writeMultimap(this, stream);
   }
 
-  @GwtIncompatible // java.io.ObjectOutputStream
-  private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
+  @GwtIncompatible("java.io.ObjectOutputStream")
+  private void readObject(ObjectInputStream stream)
+      throws IOException, ClassNotFoundException {
     stream.defaultReadObject();
-    expectedValuesPerKey = DEFAULT_VALUES_PER_KEY;
+    expectedValuesPerKey = stream.readInt();
     int distinctKeys = Serialization.readCount(stream);
-    Map<K, Collection<V>> map = Maps.newHashMap();
+    Map<K, Collection<V>> map = Maps.newHashMapWithExpectedSize(distinctKeys);
     setMap(map);
     Serialization.populateMultimap(this, stream, distinctKeys);
   }
 
-  @GwtIncompatible // Not needed in emulated source.
+  @GwtIncompatible("Not needed in emulated source.")
   private static final long serialVersionUID = 0;
 }

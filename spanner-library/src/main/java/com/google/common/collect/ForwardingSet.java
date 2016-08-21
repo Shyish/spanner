@@ -38,34 +38,28 @@ import javax.annotation.Nullable;
  * override {@code addAll} as well, either providing your own implementation, or
  * delegating to the provided {@code standardAddAll} method.
  *
- * <p><b>{@code default} method warning:</b> This class does <i>not</i> forward calls to {@code
- * default} methods. Instead, it inherits their default implementations. When those implementations
- * invoke methods, they invoke methods on the {@code ForwardingSet}.
- *
  * <p>The {@code standard} methods are not guaranteed to be thread-safe, even
  * when all of the methods that they depend on are thread-safe.
  *
  * @author Kevin Bourrillion
  * @author Louis Wasserman
- * @since 2.0
+ * @since 2.0 (imported from Google Collections Library)
  */
 @GwtCompatible
-public abstract class ForwardingSet<E> extends ForwardingCollection<E> implements Set<E> {
-  // TODO(lowasser): identify places where thread safety is actually lost
+public abstract class ForwardingSet<E> extends ForwardingCollection<E>
+    implements Set<E> {
+  // TODO(user): identify places where thread safety is actually lost
 
   /** Constructor for use by subclasses. */
   protected ForwardingSet() {}
 
-  @Override
-  protected abstract Set<E> delegate();
+  @Override protected abstract Set<E> delegate();
 
-  @Override
-  public boolean equals(@Nullable Object object) {
+  @Override public boolean equals(@Nullable Object object) {
     return object == this || delegate().equals(object);
   }
 
-  @Override
-  public int hashCode() {
+  @Override public int hashCode() {
     return delegate().hashCode();
   }
 

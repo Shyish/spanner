@@ -128,7 +128,6 @@ import javax.annotation.Nullable;
         return FIRST_PRESENT.resultIndex(comparator, key, list, foundIndex) - 1;
       }
     };
-
     abstract <E> int resultIndex(
         Comparator<? super E> comparator, E key, List<? extends E> list, int foundIndex);
   }
@@ -187,13 +186,11 @@ import javax.annotation.Nullable;
    * <p>Equivalent to {@link #binarySearch(List, Function, Object, Comparator, KeyPresentBehavior,
    * KeyAbsentBehavior)} using {@link Ordering#natural}.
    */
-  public static <E extends Comparable> int binarySearch(
-      List<? extends E> list,
-      E e,
-      KeyPresentBehavior presentBehavior,
-      KeyAbsentBehavior absentBehavior) {
+  public static <E extends Comparable> int binarySearch(List<? extends E> list, E e,
+      KeyPresentBehavior presentBehavior, KeyAbsentBehavior absentBehavior) {
     checkNotNull(e);
-    return binarySearch(list, e, Ordering.natural(), presentBehavior, absentBehavior);
+    return binarySearch(
+        list, checkNotNull(e), Ordering.natural(), presentBehavior, absentBehavior);
   }
 
   /**
@@ -202,14 +199,16 @@ import javax.annotation.Nullable;
    * <p>Equivalent to {@link #binarySearch(List, Function, Object, Comparator, KeyPresentBehavior,
    * KeyAbsentBehavior)} using {@link Ordering#natural}.
    */
-  public static <E, K extends Comparable> int binarySearch(
-      List<E> list,
-      Function<? super E, K> keyFunction,
-      @Nullable K key,
-      KeyPresentBehavior presentBehavior,
+  public static <E, K extends Comparable> int binarySearch(List<E> list,
+      Function<? super E, K> keyFunction, @Nullable K key, KeyPresentBehavior presentBehavior,
       KeyAbsentBehavior absentBehavior) {
     return binarySearch(
-        list, keyFunction, key, Ordering.natural(), presentBehavior, absentBehavior);
+        list,
+        keyFunction,
+        key,
+        Ordering.natural(),
+        presentBehavior,
+        absentBehavior);
   }
 
   /**
@@ -253,11 +252,8 @@ import javax.annotation.Nullable;
    * @return the index determined by the {@code KeyPresentBehavior}, if the key is in the list;
    *         otherwise the index determined by the {@code KeyAbsentBehavior}.
    */
-  public static <E> int binarySearch(
-      List<? extends E> list,
-      @Nullable E key,
-      Comparator<? super E> comparator,
-      KeyPresentBehavior presentBehavior,
+  public static <E> int binarySearch(List<? extends E> list, @Nullable E key,
+      Comparator<? super E> comparator, KeyPresentBehavior presentBehavior,
       KeyAbsentBehavior absentBehavior) {
     checkNotNull(comparator);
     checkNotNull(list);
@@ -266,7 +262,7 @@ import javax.annotation.Nullable;
     if (!(list instanceof RandomAccess)) {
       list = Lists.newArrayList(list);
     }
-    // TODO(lowasser): benchmark when it's best to do a linear search
+    // TODO(user): benchmark when it's best to do a linear search
 
     int lower = 0;
     int upper = list.size() - 1;
@@ -279,9 +275,8 @@ import javax.annotation.Nullable;
       } else if (c > 0) {
         lower = middle + 1;
       } else {
-        return lower
-            + presentBehavior.resultIndex(
-                comparator, key, list.subList(lower, upper + 1), middle - lower);
+        return lower + presentBehavior.resultIndex(
+            comparator, key, list.subList(lower, upper + 1), middle - lower);
       }
     }
     return absentBehavior.resultIndex(lower);

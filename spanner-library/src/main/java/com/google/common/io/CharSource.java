@@ -1,15 +1,17 @@
 /*
  * Copyright (C) 2012 The Guava Authors
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
- * the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.google.common.io;
@@ -17,23 +19,20 @@ package com.google.common.io;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.google.common.annotations.Beta;
-import com.google.common.annotations.GwtIncompatible;
 import com.google.common.base.Ascii;
-import com.google.common.base.Optional;
 import com.google.common.base.Splitter;
 import com.google.common.collect.AbstractIterator;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.google.errorprone.annotations.CanIgnoreReturnValue;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
@@ -44,16 +43,16 @@ import javax.annotation.Nullable;
  *
  * <p>{@code CharSource} provides two kinds of methods:
  * <ul>
- * <li><b>Methods that return a reader:</b> These methods should return a <i>new</i>, independent
- *     instance each time they are called. The caller is responsible for ensuring that the returned
- *     reader is closed.
- * <li><b>Convenience methods:</b> These are implementations of common operations that are typically
- *     implemented by opening a reader using one of the methods in the first category, doing
- *     something and finally closing the reader that was opened.
+ *   <li><b>Methods that return a reader:</b> These methods should return a <i>new</i>, independent
+ *   instance each time they are called. The caller is responsible for ensuring that the returned
+ *   reader is closed.
+ *   <li><b>Convenience methods:</b> These are implementations of common operations that are
+ *   typically implemented by opening a reader using one of the methods in the first category,
+ *   doing something and finally closing the reader that was opened.
  * </ul>
  *
- * <p>Several methods in this class, such as {@link #readLines()}, break the contents of the source
- * into lines. Like {@link BufferedReader}, these methods break lines on any of {@code \n},
+ * <p>Several methods in this class, such as {@link #readLines()}, break the contents of the
+ * source into lines. Like {@link BufferedReader}, these methods break lines on any of {@code \n},
  * {@code \r} or {@code \r\n}, do not include the line separator in each line and do not consider
  * there to be an empty line at the end if the contents are terminated with a line separator.
  *
@@ -63,29 +62,12 @@ import javax.annotation.Nullable;
  * @since 14.0
  * @author Colin Decker
  */
-@GwtIncompatible
 public abstract class CharSource {
 
   /**
    * Constructor for use by subclasses.
    */
   protected CharSource() {}
-
-  /**
-   * Returns a {@link ByteSource} view of this char source that encodes chars read from this source
-   * as bytes using the given {@link Charset}.
-   *
-   * <p>If {@link ByteSource#asCharSource} is called on the returned source with the same charset,
-   * the default implementation of this method will ensure that the original {@code CharSource} is
-   * returned, rather than round-trip encoding. Subclasses that override this method should behave
-   * the same way.
-   *
-   * @since 20.0
-   */
-  @Beta
-  public ByteSource asByteSource(Charset charset) {
-    return new AsByteSource(charset);
-  }
 
   /**
    * Opens a new {@link Reader} for reading from this source. This method should return a new,
@@ -113,79 +95,12 @@ public abstract class CharSource {
   }
 
   /**
-   * Returns the size of this source in chars, if the size can be easily determined without actually
-   * opening the data stream.
-   *
-   * <p>The default implementation returns {@link Optional#absent}. Some sources, such as a
-   * {@code CharSequence}, may return a non-absent value. Note that in such cases, it is
-   * <i>possible</i> that this method will return a different number of chars than would be returned
-   * by reading all of the chars.
-   *
-   * <p>Additionally, for mutable sources such as {@code StringBuilder}s, a subsequent read may
-   * return a different number of chars if the contents are changed.
-   *
-   * @since 19.0
-   */
-  @Beta
-  public Optional<Long> lengthIfKnown() {
-    return Optional.absent();
-  }
-
-  /**
-   * Returns the length of this source in chars, even if doing so requires opening and traversing an
-   * entire stream. To avoid a potentially expensive operation, see {@link #lengthIfKnown}.
-   *
-   * <p>The default implementation calls {@link #lengthIfKnown} and returns the value if present. If
-   * absent, it will fall back to a heavyweight operation that will open a stream,
-   * {@link Reader#skip(long) skip} to the end of the stream, and return the total number of chars
-   * that were skipped.
-   *
-   * <p>Note that for sources that implement {@link #lengthIfKnown} to provide a more efficient
-   * implementation, it is <i>possible</i> that this method will return a different number of chars
-   * than would be returned by reading all of the chars.
-   *
-   * <p>In either case, for mutable sources such as files, a subsequent read may return a different
-   * number of chars if the contents are changed.
-   *
-   * @throws IOException if an I/O error occurs in the process of reading the length of this source
-   * @since 19.0
-   */
-  @Beta
-  public long length() throws IOException {
-    Optional<Long> lengthIfKnown = lengthIfKnown();
-    if (lengthIfKnown.isPresent()) {
-      return lengthIfKnown.get();
-    }
-
-    Closer closer = Closer.create();
-    try {
-      Reader reader = closer.register(openStream());
-      return countBySkipping(reader);
-    } catch (Throwable e) {
-      throw closer.rethrow(e);
-    } finally {
-      closer.close();
-    }
-  }
-
-  private long countBySkipping(Reader reader) throws IOException {
-    long count = 0;
-    long read;
-    while ((read = reader.skip(Long.MAX_VALUE)) != 0) {
-      count += read;
-    }
-    return count;
-  }
-
-  /**
    * Appends the contents of this source to the given {@link Appendable} (such as a {@link Writer}).
    * Does not close {@code appendable} if it is {@code Closeable}.
    *
-   * @return the number of characters copied
    * @throws IOException if an I/O error occurs in the process of reading from this source or
    *     writing to {@code appendable}
    */
-  @CanIgnoreReturnValue
   public long copyTo(Appendable appendable) throws IOException {
     checkNotNull(appendable);
 
@@ -203,11 +118,9 @@ public abstract class CharSource {
   /**
    * Copies the contents of this source to the given sink.
    *
-   * @return the number of characters copied
    * @throws IOException if an I/O error occurs in the process of reading from this source or
    *     writing to {@code sink}
    */
-  @CanIgnoreReturnValue
   public long copyTo(CharSink sink) throws IOException {
     checkNotNull(sink);
 
@@ -249,8 +162,7 @@ public abstract class CharSource {
    *
    * @throws IOException if an I/O error occurs in the process of reading from this source
    */
-  @Nullable
-  public String readFirstLine() throws IOException {
+  public @Nullable String readFirstLine() throws IOException {
     Closer closer = Closer.create();
     try {
       BufferedReader reader = closer.register(openBufferedStream());
@@ -304,7 +216,6 @@ public abstract class CharSource {
    * @since 16.0
    */
   @Beta
-  @CanIgnoreReturnValue // some processors won't return a useful result
   public <T> T readLines(LineProcessor<T> processor) throws IOException {
     checkNotNull(processor);
 
@@ -320,22 +231,13 @@ public abstract class CharSource {
   }
 
   /**
-   * Returns whether the source has zero chars. The default implementation returns true if
-   * {@link #lengthIfKnown} returns zero, falling back to opening a stream and checking for EOF if
-   * the length is not known.
-   *
-   * <p>Note that, in cases where {@code lengthIfKnown} returns zero, it is <i>possible</i> that
-   * chars are actually available for reading. This means that a source may return {@code true} from
-   * {@code isEmpty()} despite having readable content.
+   * Returns whether the source has zero chars. The default implementation is to open a stream and
+   * check for EOF.
    *
    * @throws IOException if an I/O error occurs
    * @since 15.0
    */
   public boolean isEmpty() throws IOException {
-    Optional<Long> lengthIfKnown = lengthIfKnown();
-    if (lengthIfKnown.isPresent() && lengthIfKnown.get() == 0L) {
-      return true;
-    }
     Closer closer = Closer.create();
     try {
       Reader reader = closer.register(openStream());
@@ -351,7 +253,7 @@ public abstract class CharSource {
    * Concatenates multiple {@link CharSource} instances into a single source. Streams returned from
    * the source will contain the concatenated data from the streams of the underlying sources.
    *
-   * <p>Only one underlying stream will be open at a time. Closing the concatenated stream will
+   * <p>Only one underlying stream will be open at a time. Closing the  concatenated stream will
    * close the open underlying stream.
    *
    * @param sources the sources to concatenate
@@ -369,11 +271,11 @@ public abstract class CharSource {
    * <p>Only one underlying stream will be open at a time. Closing the concatenated stream will
    * close the open underlying stream.
    *
-   * <p>Note: The input {@code Iterator} will be copied to an {@code ImmutableList} when this method
-   * is called. This will fail if the iterator is infinite and may cause problems if the iterator
-   * eagerly fetches data for each source when iterated (rather than producing sources that only
-   * load data through their streams). Prefer using the {@link #concat(Iterable)} overload if
-   * possible.
+   * <p>Note: The input {@code Iterator} will be copied to an {@code ImmutableList} when this
+   * method is called. This will fail if the iterator is infinite and may cause problems if the
+   * iterator eagerly fetches data for each source when iterated (rather than producing sources
+   * that only load data through their streams). Prefer using the {@link #concat(Iterable)}
+   * overload if possible.
    *
    * @param sources the sources to concatenate
    * @return a {@code CharSource} containing the concatenated data
@@ -420,39 +322,10 @@ public abstract class CharSource {
     return EmptyCharSource.INSTANCE;
   }
 
-  /**
-   * A byte source that reads chars from this source and encodes them as bytes using a charset.
-   */
-  private final class AsByteSource extends ByteSource {
-
-    final Charset charset;
-
-    AsByteSource(Charset charset) {
-      this.charset = checkNotNull(charset);
-    }
-
-    @Override
-    public CharSource asCharSource(Charset charset) {
-      if (charset.equals(this.charset)) {
-        return CharSource.this;
-      }
-      return super.asCharSource(charset);
-    }
-
-    @Override
-    public InputStream openStream() throws IOException {
-      return new ReaderInputStream(CharSource.this.openStream(), charset, 8192);
-    }
-
-    @Override
-    public String toString() {
-      return CharSource.this.toString() + ".asByteSource(" + charset + ")";
-    }
-  }
-
   private static class CharSequenceCharSource extends CharSource {
 
-    private static final Splitter LINE_SPLITTER = Splitter.onPattern("\r\n|\n|\r");
+    private static final Splitter LINE_SPLITTER
+        = Splitter.on(Pattern.compile("\r\n|\n|\r"));
 
     private final CharSequence seq;
 
@@ -475,19 +348,10 @@ public abstract class CharSource {
       return seq.length() == 0;
     }
 
-    @Override
-    public long length() {
-      return seq.length();
-    }
-
-    @Override
-    public Optional<Long> lengthIfKnown() {
-      return Optional.of((long) seq.length());
-    }
-
     /**
-     * Returns an iterable over the lines in the string. If the string ends in a newline, a final
-     * empty string is not included to match the behavior of BufferedReader/LineReader.readLine().
+     * Returns an iterable over the lines in the string. If the string ends in
+     * a newline, a final empty string is not included to match the behavior of
+     * BufferedReader/LineReader.readLine().
      */
     private Iterable<String> lines() {
       return new Iterable<String>() {
@@ -574,28 +438,6 @@ public abstract class CharSource {
         }
       }
       return true;
-    }
-
-    @Override
-    public Optional<Long> lengthIfKnown() {
-      long result = 0L;
-      for (CharSource source : sources) {
-        Optional<Long> lengthIfKnown = source.lengthIfKnown();
-        if (!lengthIfKnown.isPresent()) {
-          return Optional.absent();
-        }
-        result += lengthIfKnown.get();
-      }
-      return Optional.of(result);
-    }
-
-    @Override
-    public long length() throws IOException {
-      long result = 0L;
-      for (CharSource source : sources) {
-        result += source.length();
-      }
-      return result;
     }
 
     @Override

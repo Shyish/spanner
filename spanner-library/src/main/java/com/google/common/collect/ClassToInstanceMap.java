@@ -17,7 +17,6 @@
 package com.google.common.collect;
 
 import com.google.common.annotations.GwtCompatible;
-import com.google.errorprone.annotations.CanIgnoreReturnValue;
 
 import java.util.Map;
 
@@ -32,9 +31,9 @@ import javax.annotation.Nullable;
  * <p>Like any other {@code Map<Class, Object>}, this map may contain entries
  * for primitive types, and a primitive type and its corresponding wrapper type
  * may map to different values.
- *
+ * 
  * <p>See the Guava User Guide article on <a href=
- * "https://github.com/google/guava/wiki/NewCollectionTypesExplained#classtoinstancemap">
+ * "http://code.google.com/p/guava-libraries/wiki/NewCollectionTypesExplained#ClassToInstanceMap">
  * {@code ClassToInstanceMap}</a>.
  *
  * <p>To map a generic type to an instance of that type, use {@link
@@ -44,7 +43,7 @@ import javax.annotation.Nullable;
  *     simply {@link Object}
  *
  * @author Kevin Bourrillion
- * @since 2.0
+ * @since 2.0 (imported from Google Collections Library)
  */
 @GwtCompatible
 public interface ClassToInstanceMap<B> extends Map<Class<? extends B>, B> {
@@ -54,7 +53,6 @@ public interface ClassToInstanceMap<B> extends Map<Class<? extends B>, B> {
    * bound to this specific class, not a value that may have been bound to a
    * subtype.
    */
-  @CanIgnoreReturnValue // TODO(kak): Consider removing this?
   <T extends B> T getInstance(Class<T> type);
 
   /**
@@ -64,6 +62,5 @@ public interface ClassToInstanceMap<B> extends Map<Class<? extends B>, B> {
    * @return the value previously associated with this class (possibly {@code
    *     null}), or {@code null} if there was no previous entry.
    */
-  @CanIgnoreReturnValue
   <T extends B> T putInstance(Class<T> type, @Nullable T value);
 }

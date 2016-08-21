@@ -44,13 +44,14 @@ import java.util.Set;
  * Multimaps#synchronizedSetMultimap}.
  *
  * @author Jared Levy
- * @since 2.0
+ * @since 2.0 (imported from Google Collections Library)
  */
 @GwtCompatible(serializable = true, emulated = true)
 public final class HashMultimap<K, V> extends AbstractSetMultimap<K, V> {
   private static final int DEFAULT_VALUES_PER_KEY = 2;
 
-  @VisibleForTesting transient int expectedValuesPerKey = DEFAULT_VALUES_PER_KEY;
+  @VisibleForTesting
+  transient int expectedValuesPerKey = DEFAULT_VALUES_PER_KEY;
 
   /**
    * Creates a new, empty {@code HashMultimap} with the default initial
@@ -69,7 +70,8 @@ public final class HashMultimap<K, V> extends AbstractSetMultimap<K, V> {
    * @throws IllegalArgumentException if {@code expectedKeys} or {@code
    *      expectedValuesPerKey} is negative
    */
-  public static <K, V> HashMultimap<K, V> create(int expectedKeys, int expectedValuesPerKey) {
+  public static <K, V> HashMultimap<K, V> create(
+      int expectedKeys, int expectedValuesPerKey) {
     return new HashMultimap<K, V>(expectedKeys, expectedValuesPerKey);
   }
 
@@ -80,7 +82,8 @@ public final class HashMultimap<K, V> extends AbstractSetMultimap<K, V> {
    *
    * @param multimap the multimap whose contents are copied to this multimap
    */
-  public static <K, V> HashMultimap<K, V> create(Multimap<? extends K, ? extends V> multimap) {
+  public static <K, V> HashMultimap<K, V> create(
+      Multimap<? extends K, ? extends V> multimap) {
     return new HashMultimap<K, V>(multimap);
   }
 
@@ -95,7 +98,8 @@ public final class HashMultimap<K, V> extends AbstractSetMultimap<K, V> {
   }
 
   private HashMultimap(Multimap<? extends K, ? extends V> multimap) {
-    super(Maps.<K, Collection<V>>newHashMapWithExpectedSize(multimap.keySet().size()));
+    super(Maps.<K, Collection<V>>newHashMapWithExpectedSize(
+        multimap.keySet().size()));
     putAll(multimap);
   }
 
@@ -106,8 +110,7 @@ public final class HashMultimap<K, V> extends AbstractSetMultimap<K, V> {
    *
    * @return a new {@code HashSet} containing a collection of values for one key
    */
-  @Override
-  Set<V> createCollection() {
+  @Override Set<V> createCollection() {
     return Sets.<V>newHashSetWithExpectedSize(expectedValuesPerKey);
   }
 
@@ -116,22 +119,24 @@ public final class HashMultimap<K, V> extends AbstractSetMultimap<K, V> {
    *     each distinct key: the key, number of values for that key, and the
    *     key's values
    */
-  @GwtIncompatible // java.io.ObjectOutputStream
+  @GwtIncompatible("java.io.ObjectOutputStream")
   private void writeObject(ObjectOutputStream stream) throws IOException {
     stream.defaultWriteObject();
+    stream.writeInt(expectedValuesPerKey);
     Serialization.writeMultimap(this, stream);
   }
 
-  @GwtIncompatible // java.io.ObjectInputStream
-  private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
+  @GwtIncompatible("java.io.ObjectInputStream")
+  private void readObject(ObjectInputStream stream)
+      throws IOException, ClassNotFoundException {
     stream.defaultReadObject();
-    expectedValuesPerKey = DEFAULT_VALUES_PER_KEY;
+    expectedValuesPerKey = stream.readInt();
     int distinctKeys = Serialization.readCount(stream);
-    Map<K, Collection<V>> map = Maps.newHashMap();
+    Map<K, Collection<V>> map = Maps.newHashMapWithExpectedSize(distinctKeys);
     setMap(map);
     Serialization.populateMultimap(this, stream, distinctKeys);
   }
 
-  @GwtIncompatible // Not needed in emulated source
+  @GwtIncompatible("Not needed in emulated source")
   private static final long serialVersionUID = 0;
 }
