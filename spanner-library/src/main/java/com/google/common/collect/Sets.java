@@ -19,14 +19,11 @@ package com.google.common.collect;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.google.common.annotations.Beta;
 import com.google.common.annotations.GwtCompatible;
 import com.google.common.annotations.GwtIncompatible;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Collections2.FilteredCollection;
-import com.google.common.math.IntMath;
-import com.google.errorprone.annotations.CanIgnoreReturnValue;
 
 import java.io.Serializable;
 import java.util.AbstractSet;
@@ -55,13 +52,13 @@ import javax.annotation.Nullable;
  * class's counterparts {@link Lists}, {@link Maps} and {@link Queues}.
  *
  * <p>See the Guava User Guide article on <a href=
- * "https://github.com/google/guava/wiki/CollectionUtilitiesExplained#sets">
+ * "http://code.google.com/p/guava-libraries/wiki/CollectionUtilitiesExplained#Sets">
  * {@code Sets}</a>.
  *
  * @author Kevin Bourrillion
  * @author Jared Levy
  * @author Chris Povirk
- * @since 2.0
+ * @since 2.0 (imported from Google Collections Library)
  */
 @GwtCompatible(emulated = true)
 public final class Sets {
@@ -114,7 +111,8 @@ public final class Sets {
    */
   // http://code.google.com/p/google-web-toolkit/issues/detail?id=3028
   @GwtCompatible(serializable = true)
-  public static <E extends Enum<E>> ImmutableSet<E> immutableEnumSet(Iterable<E> elements) {
+  public static <E extends Enum<E>> ImmutableSet<E> immutableEnumSet(
+      Iterable<E> elements) {
     if (elements instanceof ImmutableEnumSet) {
       return (ImmutableEnumSet<E>) elements;
     } else if (elements instanceof Collection) {
@@ -137,12 +135,13 @@ public final class Sets {
   }
 
   /**
-   * Returns a new, <i>mutable</i> {@code EnumSet} instance containing the given elements in their
-   * natural order. This method behaves identically to {@link EnumSet#copyOf(Collection)}, but also
-   * accepts non-{@code Collection} iterables and empty iterables.
+   * Returns a new {@code EnumSet} instance containing the given elements.
+   * Unlike {@link EnumSet#copyOf(Collection)}, this method does not produce an
+   * exception on an empty collection, and it may be called on any iterable, not
+   * just a {@code Collection}.
    */
-  public static <E extends Enum<E>> EnumSet<E> newEnumSet(
-      Iterable<E> iterable, Class<E> elementType) {
+  public static <E extends Enum<E>> EnumSet<E> newEnumSet(Iterable<E> iterable,
+      Class<E> elementType) {
     EnumSet<E> set = EnumSet.noneOf(elementType);
     Iterables.addAll(set, iterable);
     return set;
@@ -151,33 +150,33 @@ public final class Sets {
   // HashSet
 
   /**
-   * Creates a <i>mutable</i>, initially empty {@code HashSet} instance.
+   * Creates a <i>mutable</i>, empty {@code HashSet} instance.
    *
-   * <p><b>Note:</b> if mutability is not required, use {@link ImmutableSet#of()} instead. If
-   * {@code E} is an {@link Enum} type, use {@link EnumSet#noneOf} instead. Otherwise, strongly
-   * consider using a {@code LinkedHashSet} instead, at the cost of increased memory footprint, to
-   * get deterministic iteration behavior.
+   * <p><b>Note:</b> if mutability is not required, use {@link
+   * ImmutableSet#of()} instead.
    *
-   * <p><b>Note for Java 7 and later:</b> this method is now unnecessary and should be treated as
-   * deprecated. Instead, use the {@code HashSet} constructor directly, taking advantage of the new
-   * <a href="http://goo.gl/iz2Wi">"diamond" syntax</a>.
+   * <p><b>Note:</b> if {@code E} is an {@link Enum} type, use {@link
+   * EnumSet#noneOf} instead.
+   *
+   * @return a new, empty {@code HashSet}
    */
   public static <E> HashSet<E> newHashSet() {
     return new HashSet<E>();
   }
 
   /**
-   * Creates a <i>mutable</i> {@code HashSet} instance initially containing the given elements.
+   * Creates a <i>mutable</i> {@code HashSet} instance containing the given
+   * elements in unspecified order.
    *
-   * <p><b>Note:</b> if elements are non-null and won't be added or removed after this point, use
-   * {@link ImmutableSet#of()} or {@link ImmutableSet#copyOf(Object[])} instead. If {@code E} is an
-   * {@link Enum} type, use {@link EnumSet#of(Enum, Enum[])} instead. Otherwise, strongly consider
-   * using a {@code LinkedHashSet} instead, at the cost of increased memory footprint, to get
-   * deterministic iteration behavior.
+   * <p><b>Note:</b> if mutability is not required and the elements are
+   * non-null, use an overload of {@link ImmutableSet#of()} (for varargs) or
+   * {@link ImmutableSet#copyOf(Object[])} (for an array) instead.
    *
-   * <p>This method is just a small convenience, either for {@code newHashSet(}{@link Arrays#asList
-   * asList}{@code (...))}, or for creating an empty set then calling {@link Collections#addAll}.
-   * This method is not actually very useful and will likely be deprecated in the future.
+   * <p><b>Note:</b> if {@code E} is an {@link Enum} type, use {@link
+   * EnumSet#of(Enum, Enum[])} instead.
+   *
+   * @param elements the elements that the set should contain
+   * @return a new {@code HashSet} containing those elements (minus duplicates)
    */
   public static <E> HashSet<E> newHashSet(E... elements) {
     HashSet<E> set = newHashSetWithExpectedSize(elements.length);
@@ -186,10 +185,11 @@ public final class Sets {
   }
 
   /**
-   * Creates a {@code HashSet} instance, with a high enough initial table size that it <i>should</i>
-   * hold {@code expectedSize} elements without resizing. This behavior cannot be broadly
-   * guaranteed, but it is observed to be true for OpenJDK 1.7. It also can't be guaranteed that the
-   * method isn't inadvertently <i>oversizing</i> the returned set.
+   * Creates a {@code HashSet} instance, with a high enough "initial capacity"
+   * that it <i>should</i> hold {@code expectedSize} elements without growth.
+   * This behavior cannot be broadly guaranteed, but it is observed to be true
+   * for OpenJDK 1.6. It also can't be guaranteed that the method isn't
+   * inadvertently <i>oversizing</i> the returned set.
    *
    * @param expectedSize the number of elements you expect to add to the
    *        returned set
@@ -202,22 +202,17 @@ public final class Sets {
   }
 
   /**
-   * Creates a <i>mutable</i> {@code HashSet} instance containing the given elements. A very thin
-   * convenience for creating an empty set then calling {@link Collection#addAll} or {@link
-   * Iterables#addAll}.
+   * Creates a <i>mutable</i> {@code HashSet} instance containing the given
+   * elements in unspecified order.
    *
-   * <p><b>Note:</b> if mutability is not required and the elements are non-null, use {@link
-   * ImmutableSet#copyOf(Iterable)} instead. (Or, change {@code elements} to be a {@link
-   * FluentIterable} and call {@code elements.toSet()}.)
+   * <p><b>Note:</b> if mutability is not required and the elements are
+   * non-null, use {@link ImmutableSet#copyOf(Iterable)} instead.
    *
-   * <p><b>Note:</b> if {@code E} is an {@link Enum} type, use {@link #newEnumSet(Iterable, Class)}
-   * instead.
+   * <p><b>Note:</b> if {@code E} is an {@link Enum} type, use
+   * {@link #newEnumSet(Iterable, Class)} instead.
    *
-   * <p><b>Note for Java 7 and later:</b> if {@code elements} is a {@link Collection}, you don't
-   * need this method. Instead, use the {@code HashSet} constructor directly, taking advantage of
-   * the new <a href="http://goo.gl/iz2Wi">"diamond" syntax</a>.
-   *
-   * <p>Overall, this method is not very useful and will likely be deprecated in the future.
+   * @param elements the elements that the set should contain
+   * @return a new {@code HashSet} containing those elements (minus duplicates)
    */
   public static <E> HashSet<E> newHashSet(Iterable<? extends E> elements) {
     return (elements instanceof Collection)
@@ -226,16 +221,17 @@ public final class Sets {
   }
 
   /**
-   * Creates a <i>mutable</i> {@code HashSet} instance containing the given elements. A very thin
-   * convenience for creating an empty set and then calling {@link Iterators#addAll}.
+   * Creates a <i>mutable</i> {@code HashSet} instance containing the given
+   * elements in unspecified order.
    *
-   * <p><b>Note:</b> if mutability is not required and the elements are non-null, use {@link
-   * ImmutableSet#copyOf(Iterator)} instead.
+   * <p><b>Note:</b> if mutability is not required and the elements are
+   * non-null, use {@link ImmutableSet#copyOf(Iterable)} instead.
    *
-   * <p><b>Note:</b> if {@code E} is an {@link Enum} type, you should create an {@link EnumSet}
-   * instead.
+   * <p><b>Note:</b> if {@code E} is an {@link Enum} type, you should create an
+   * {@link EnumSet} instead.
    *
-   * <p>Overall, this method is not very useful and will likely be deprecated in the future.
+   * @param elements the elements that the set should contain
+   * @return a new {@code HashSet} containing those elements (minus duplicates)
    */
   public static <E> HashSet<E> newHashSet(Iterator<? extends E> elements) {
     HashSet<E> set = newHashSet();
@@ -255,7 +251,7 @@ public final class Sets {
    * @since 15.0
    */
   public static <E> Set<E> newConcurrentHashSet() {
-    return Collections.newSetFromMap(new ConcurrentHashMap<E, Boolean>());
+    return newSetFromMap(new ConcurrentHashMap<E, Boolean>());
   }
 
   /**
@@ -272,7 +268,8 @@ public final class Sets {
    *      null
    * @since 15.0
    */
-  public static <E> Set<E> newConcurrentHashSet(Iterable<? extends E> elements) {
+  public static <E> Set<E> newConcurrentHashSet(
+      Iterable<? extends E> elements) {
     Set<E> set = newConcurrentHashSet();
     Iterables.addAll(set, elements);
     return set;
@@ -283,11 +280,8 @@ public final class Sets {
   /**
    * Creates a <i>mutable</i>, empty {@code LinkedHashSet} instance.
    *
-   * <p><b>Note:</b> if mutability is not required, use {@link ImmutableSet#of()} instead.
-   *
-   * <p><b>Note for Java 7 and later:</b> this method is now unnecessary and should be treated as
-   * deprecated. Instead, use the {@code LinkedHashSet} constructor directly, taking advantage of
-   * the new <a href="http://goo.gl/iz2Wi">"diamond" syntax</a>.
+   * <p><b>Note:</b> if mutability is not required, use {@link
+   * ImmutableSet#of()} instead.
    *
    * @return a new, empty {@code LinkedHashSet}
    */
@@ -296,37 +290,37 @@ public final class Sets {
   }
 
   /**
-   * Creates a {@code LinkedHashSet} instance, with a high enough "initial capacity" that it
-   * <i>should</i> hold {@code expectedSize} elements without growth. This behavior cannot be
-   * broadly guaranteed, but it is observed to be true for OpenJDK 1.7. It also can't be guaranteed
-   * that the method isn't inadvertently <i>oversizing</i> the returned set.
+   * Creates a {@code LinkedHashSet} instance, with a high enough "initial
+   * capacity" that it <i>should</i> hold {@code expectedSize} elements without
+   * growth. This behavior cannot be broadly guaranteed, but it is observed to
+   * be true for OpenJDK 1.6. It also can't be guaranteed that the method isn't
+   * inadvertently <i>oversizing</i> the returned set.
    *
-   * @param expectedSize the number of elements you expect to add to the returned set
-   * @return a new, empty {@code LinkedHashSet} with enough capacity to hold {@code expectedSize}
-   *         elements without resizing
+   * @param expectedSize the number of elements you expect to add to the
+   *        returned set
+   * @return a new, empty {@code LinkedHashSet} with enough capacity to hold
+   *         {@code expectedSize} elements without resizing
    * @throws IllegalArgumentException if {@code expectedSize} is negative
    * @since 11.0
    */
-  public static <E> LinkedHashSet<E> newLinkedHashSetWithExpectedSize(int expectedSize) {
+  public static <E> LinkedHashSet<E> newLinkedHashSetWithExpectedSize(
+      int expectedSize) {
     return new LinkedHashSet<E>(Maps.capacity(expectedSize));
   }
 
   /**
-   * Creates a <i>mutable</i> {@code LinkedHashSet} instance containing the given elements in order.
+   * Creates a <i>mutable</i> {@code LinkedHashSet} instance containing the
+   * given elements in order.
    *
-   * <p><b>Note:</b> if mutability is not required and the elements are non-null, use {@link
-   * ImmutableSet#copyOf(Iterable)} instead.
-   *
-   * <p><b>Note for Java 7 and later:</b> if {@code elements} is a {@link Collection}, you don't
-   * need this method. Instead, use the {@code LinkedHashSet} constructor directly, taking advantage
-   * of the new <a href="http://goo.gl/iz2Wi">"diamond" syntax</a>.
-   *
-   * <p>Overall, this method is not very useful and will likely be deprecated in the future.
+   * <p><b>Note:</b> if mutability is not required and the elements are
+   * non-null, use {@link ImmutableSet#copyOf(Iterable)} instead.
    *
    * @param elements the elements that the set should contain, in order
-   * @return a new {@code LinkedHashSet} containing those elements (minus duplicates)
+   * @return a new {@code LinkedHashSet} containing those elements (minus
+   *     duplicates)
    */
-  public static <E> LinkedHashSet<E> newLinkedHashSet(Iterable<? extends E> elements) {
+  public static <E> LinkedHashSet<E> newLinkedHashSet(
+      Iterable<? extends E> elements) {
     if (elements instanceof Collection) {
       return new LinkedHashSet<E>(Collections2.cast(elements));
     }
@@ -338,14 +332,11 @@ public final class Sets {
   // TreeSet
 
   /**
-   * Creates a <i>mutable</i>, empty {@code TreeSet} instance sorted by the natural sort ordering of
-   * its elements.
+   * Creates a <i>mutable</i>, empty {@code TreeSet} instance sorted by the
+   * natural sort ordering of its elements.
    *
-   * <p><b>Note:</b> if mutability is not required, use {@link ImmutableSortedSet#of()} instead.
-   *
-   * <p><b>Note for Java 7 and later:</b> this method is now unnecessary and should be treated as
-   * deprecated. Instead, use the {@code TreeSet} constructor directly, taking advantage of the new
-   * <a href="http://goo.gl/iz2Wi">"diamond" syntax</a>.
+   * <p><b>Note:</b> if mutability is not required, use {@link
+   * ImmutableSortedSet#of()} instead.
    *
    * @return a new, empty {@code TreeSet}
    */
@@ -354,43 +345,33 @@ public final class Sets {
   }
 
   /**
-   * Creates a <i>mutable</i> {@code TreeSet} instance containing the given elements sorted by their
-   * natural ordering.
+   * Creates a <i>mutable</i> {@code TreeSet} instance containing the given
+   * elements sorted by their natural ordering.
    *
-   * <p><b>Note:</b> if mutability is not required, use {@link ImmutableSortedSet#copyOf(Iterable)}
-   * instead.
+   * <p><b>Note:</b> if mutability is not required, use {@link
+   * ImmutableSortedSet#copyOf(Iterable)} instead.
    *
-   * <p><b>Note:</b> If {@code elements} is a {@code SortedSet} with an explicit comparator, this
-   * method has different behavior than {@link TreeSet#TreeSet(SortedSet)}, which returns a {@code
-   * TreeSet} with that comparator.
-   *
-   * <p><b>Note for Java 7 and later:</b> this method is now unnecessary and should be treated as
-   * deprecated. Instead, use the {@code TreeSet} constructor directly, taking advantage of the new
-   * <a href="http://goo.gl/iz2Wi">"diamond" syntax</a>.
-   *
-   * <p>This method is just a small convenience for creating an empty set and then calling {@link
-   * Iterables#addAll}. This method is not very useful and will likely be deprecated in the future.
+   * <p><b>Note:</b> If {@code elements} is a {@code SortedSet} with an explicit
+   * comparator, this method has different behavior than
+   * {@link TreeSet#TreeSet(SortedSet)}, which returns a {@code TreeSet} with
+   * that comparator.
    *
    * @param elements the elements that the set should contain
    * @return a new {@code TreeSet} containing those elements (minus duplicates)
    */
-  public static <E extends Comparable> TreeSet<E> newTreeSet(Iterable<? extends E> elements) {
+  public static <E extends Comparable> TreeSet<E> newTreeSet(
+      Iterable<? extends E> elements) {
     TreeSet<E> set = newTreeSet();
     Iterables.addAll(set, elements);
     return set;
   }
 
   /**
-   * Creates a <i>mutable</i>, empty {@code TreeSet} instance with the given comparator.
+   * Creates a <i>mutable</i>, empty {@code TreeSet} instance with the given
+   * comparator.
    *
    * <p><b>Note:</b> if mutability is not required, use {@code
    * ImmutableSortedSet.orderedBy(comparator).build()} instead.
-   *
-   * <p><b>Note for Java 7 and later:</b> this method is now unnecessary and should be treated as
-   * deprecated. Instead, use the {@code TreeSet} constructor directly, taking advantage of the new
-   * <a href="http://goo.gl/iz2Wi">"diamond" syntax</a>. One caveat to this is that the {@code
-   * TreeSet} constructor uses a null {@code Comparator} to mean "natural ordering," whereas this
-   * factory rejects null. Clean your code accordingly.
    *
    * @param comparator the comparator to use to sort the set
    * @return a new, empty {@code TreeSet}
@@ -411,7 +392,7 @@ public final class Sets {
    * @since 8.0
    */
   public static <E> Set<E> newIdentityHashSet() {
-    return Collections.newSetFromMap(Maps.<E, Boolean>newIdentityHashMap());
+    return Sets.newSetFromMap(Maps.<E, Boolean>newIdentityHashMap());
   }
 
   /**
@@ -423,7 +404,7 @@ public final class Sets {
    * @return a new, empty {@code CopyOnWriteArraySet}
    * @since 12.0
    */
-  @GwtIncompatible // CopyOnWriteArraySet
+  @GwtIncompatible("CopyOnWriteArraySet")
   public static <E> CopyOnWriteArraySet<E> newCopyOnWriteArraySet() {
     return new CopyOnWriteArraySet<E>();
   }
@@ -435,14 +416,14 @@ public final class Sets {
    * @return a new {@code CopyOnWriteArraySet} containing those elements
    * @since 12.0
    */
-  @GwtIncompatible // CopyOnWriteArraySet
-  public static <E> CopyOnWriteArraySet<E> newCopyOnWriteArraySet(Iterable<? extends E> elements) {
+  @GwtIncompatible("CopyOnWriteArraySet")
+  public static <E> CopyOnWriteArraySet<E> newCopyOnWriteArraySet(
+      Iterable<? extends E> elements) {
     // We copy elements to an ArrayList first, rather than incurring the
     // quadratic cost of adding them to the COWAS directly.
-    Collection<? extends E> elementsCollection =
-        (elements instanceof Collection)
-            ? Collections2.cast(elements)
-            : Lists.newArrayList(elements);
+    Collection<? extends E> elementsCollection = (elements instanceof Collection)
+        ? Collections2.cast(elements)
+        : Lists.newArrayList(elements);
     return new CopyOnWriteArraySet<E>(elementsCollection);
   }
 
@@ -461,12 +442,13 @@ public final class Sets {
    * @throws IllegalArgumentException if {@code collection} is not an
    *     {@code EnumSet} instance and contains no elements
    */
-  public static <E extends Enum<E>> EnumSet<E> complementOf(Collection<E> collection) {
+  public static <E extends Enum<E>> EnumSet<E> complementOf(
+      Collection<E> collection) {
     if (collection instanceof EnumSet) {
       return EnumSet.complementOf((EnumSet<E>) collection);
     }
-    checkArgument(
-        !collection.isEmpty(), "collection is empty; use the other version of this method");
+    checkArgument(!collection.isEmpty(),
+        "collection is empty; use the other version of this method");
     Class<E> type = collection.iterator().next().getDeclaringClass();
     return makeComplementByHand(collection, type);
   }
@@ -521,17 +503,16 @@ public final class Sets {
    *   Set<Object> identityHashSet = Sets.newSetFromMap(
    *       new IdentityHashMap<Object, Boolean>());}</pre>
    *
-   * <p>The returned set is serializable if the backing map is.
+   * <p>This method has the same behavior as the JDK 6 method
+   * {@code Collections.newSetFromMap()}. The returned set is serializable if
+   * the backing map is.
    *
    * @param map the backing map
    * @return the set backed by the map
    * @throws IllegalArgumentException if {@code map} is not empty
-   * @deprecated Use {@link Collections#newSetFromMap} instead. This method
-   *     will be removed in December 2017.
    */
-  @Deprecated
   public static <E> Set<E> newSetFromMap(Map<E, Boolean> map) {
-    return Collections.newSetFromMap(map);
+    return Platform.newSetFromMap(map);
   }
 
   /**
@@ -542,7 +523,7 @@ public final class Sets {
    * as a plain {@link Set}, or immediately invoke {@link #immutableCopy} or
    * {@link #copyInto} and forget the {@code SetView} itself.
    *
-   * @since 2.0
+   * @since 2.0 (imported from Google Collections Library)
    */
   public abstract static class SetView<E> extends AbstractSet<E> {
     private SetView() {} // no subclasses but our own
@@ -569,19 +550,10 @@ public final class Sets {
      */
     // Note: S should logically extend Set<? super E> but can't due to either
     // some javac bug or some weirdness in the spec, not sure which.
-    @CanIgnoreReturnValue
     public <S extends Set<E>> S copyInto(S set) {
       set.addAll(this);
       return set;
     }
-
-    /**
-     * Scope the return type to {@link UnmodifiableIterator} to ensure this is an unmodifiable view.
-     *
-     * @since 20.0 (present with return type {@link Iterator} since 2.0)
-     */
-    @Override
-    public abstract UnmodifiableIterator<E> iterator();
   }
 
   /**
@@ -594,45 +566,45 @@ public final class Sets {
    * <p>Results are undefined if {@code set1} and {@code set2} are sets based on
    * different equivalence relations (as {@link HashSet}, {@link TreeSet}, and
    * the {@link Map#keySet} of an {@code IdentityHashMap} all are).
+   *
+   * <p><b>Note:</b> The returned view performs better when {@code set1} is the
+   * smaller of the two sets. If you have reason to believe one of your sets
+   * will generally be smaller than the other, pass it first.
+   *
+   * <p>Further, note that the current implementation is not suitable for nested
+   * {@code union} views, i.e. the following should be avoided when in a loop:
+   * {@code union = Sets.union(union, anotherSet);}, since iterating over the resulting
+   * set has a cubic complexity to the depth of the nesting.
    */
-  public static <E> SetView<E> union(final Set<? extends E> set1, final Set<? extends E> set2) {
+  public static <E> SetView<E> union(
+      final Set<? extends E> set1, final Set<? extends E> set2) {
     checkNotNull(set1, "set1");
     checkNotNull(set2, "set2");
 
     final Set<? extends E> set2minus1 = difference(set2, set1);
 
     return new SetView<E>() {
-      @Override
-      public int size() {
-        return IntMath.saturatedAdd(set1.size(), set2minus1.size());
+      @Override public int size() {
+        return set1.size() + set2minus1.size();
       }
-
-      @Override
-      public boolean isEmpty() {
+      @Override public boolean isEmpty() {
         return set1.isEmpty() && set2.isEmpty();
       }
-
-      @Override
-      public UnmodifiableIterator<E> iterator() {
+      @Override public Iterator<E> iterator() {
         return Iterators.unmodifiableIterator(
             Iterators.concat(set1.iterator(), set2minus1.iterator()));
       }
-
-      @Override
-      public boolean contains(Object object) {
+      @Override public boolean contains(Object object) {
         return set1.contains(object) || set2.contains(object);
       }
-
-      @Override
-      public <S extends Set<E>> S copyInto(S set) {
+      @Override public <S extends Set<E>> S copyInto(S set) {
         set.addAll(set1);
         set.addAll(set2);
         return set;
       }
-
-      @Override
-      public ImmutableSet<E> immutableCopy() {
-        return new ImmutableSet.Builder<E>().addAll(set1).addAll(set2).build();
+      @Override public ImmutableSet<E> immutableCopy() {
+        return new ImmutableSet.Builder<E>()
+            .addAll(set1).addAll(set2).build();
       }
     };
   }
@@ -663,35 +635,28 @@ public final class Sets {
    *
    * <p>This is unfortunate, but should come up only very rarely.
    */
-  public static <E> SetView<E> intersection(final Set<E> set1, final Set<?> set2) {
+  public static <E> SetView<E> intersection(
+      final Set<E> set1, final Set<?> set2) {
     checkNotNull(set1, "set1");
     checkNotNull(set2, "set2");
 
     final Predicate<Object> inSet2 = Predicates.in(set2);
     return new SetView<E>() {
-      @Override
-      public UnmodifiableIterator<E> iterator() {
+      @Override public Iterator<E> iterator() {
         return Iterators.filter(set1.iterator(), inSet2);
       }
-
-      @Override
-      public int size() {
+      @Override public int size() {
         return Iterators.size(iterator());
       }
-
-      @Override
-      public boolean isEmpty() {
+      @Override public boolean isEmpty() {
         return !iterator().hasNext();
       }
-
-      @Override
-      public boolean contains(Object object) {
+      @Override public boolean contains(Object object) {
         return set1.contains(object) && set2.contains(object);
       }
-
-      @Override
-      public boolean containsAll(Collection<?> collection) {
-        return set1.containsAll(collection) && set2.containsAll(collection);
+      @Override public boolean containsAll(Collection<?> collection) {
+        return set1.containsAll(collection)
+            && set2.containsAll(collection);
       }
     };
   }
@@ -707,29 +672,23 @@ public final class Sets {
    * on different equivalence relations (as {@code HashSet}, {@code TreeSet},
    * and the keySet of an {@code IdentityHashMap} all are).
    */
-  public static <E> SetView<E> difference(final Set<E> set1, final Set<?> set2) {
+  public static <E> SetView<E> difference(
+      final Set<E> set1, final Set<?> set2) {
     checkNotNull(set1, "set1");
     checkNotNull(set2, "set2");
 
     final Predicate<Object> notInSet2 = Predicates.not(Predicates.in(set2));
     return new SetView<E>() {
-      @Override
-      public UnmodifiableIterator<E> iterator() {
+      @Override public Iterator<E> iterator() {
         return Iterators.filter(set1.iterator(), notInSet2);
       }
-
-      @Override
-      public int size() {
+      @Override public int size() {
         return Iterators.size(iterator());
       }
-
-      @Override
-      public boolean isEmpty() {
+      @Override public boolean isEmpty() {
         return set2.containsAll(set1);
       }
-
-      @Override
-      public boolean contains(Object element) {
+      @Override public boolean contains(Object element) {
         return set1.contains(element) && !set2.contains(element);
       }
     };
@@ -748,50 +707,12 @@ public final class Sets {
    * @since 3.0
    */
   public static <E> SetView<E> symmetricDifference(
-      final Set<? extends E> set1, final Set<? extends E> set2) {
+      Set<? extends E> set1, Set<? extends E> set2) {
     checkNotNull(set1, "set1");
     checkNotNull(set2, "set2");
 
-    return new SetView<E>() {
-      @Override
-      public UnmodifiableIterator<E> iterator() {
-        final Iterator<? extends E> itr1 = set1.iterator();
-        final Iterator<? extends E> itr2 = set2.iterator();
-        return new AbstractIterator<E>() {
-          @Override
-          public E computeNext() {
-            while (itr1.hasNext()) {
-              E elem1 = itr1.next();
-              if (!set2.contains(elem1)) {
-                return elem1;
-              }
-            }
-            while (itr2.hasNext()) {
-              E elem2 = itr2.next();
-              if (!set1.contains(elem2)) {
-                return elem2;
-              }
-            }
-            return endOfData();
-          }
-        };
-      }
-
-      @Override
-      public int size() {
-        return Iterators.size(iterator());
-      }
-
-      @Override
-      public boolean isEmpty() {
-        return set1.equals(set2);
-      }
-
-      @Override
-      public boolean contains(Object element) {
-        return set1.contains(element) ^ set2.contains(element);
-      }
-    };
+    // TODO(kevinb): Replace this with a more efficient implementation
+    return difference(union(set1, set2), intersection(set1, set2));
   }
 
   /**
@@ -821,7 +742,8 @@ public final class Sets {
    * functionality.)
    */
   // TODO(kevinb): how to omit that last sentence when building GWT javadoc?
-  public static <E> Set<E> filter(Set<E> unfiltered, Predicate<? super E> predicate) {
+  public static <E> Set<E> filter(
+      Set<E> unfiltered, Predicate<? super E> predicate) {
     if (unfiltered instanceof SortedSet) {
       return filter((SortedSet<E>) unfiltered, predicate);
     }
@@ -829,25 +751,27 @@ public final class Sets {
       // Support clear(), removeAll(), and retainAll() when filtering a filtered
       // collection.
       FilteredSet<E> filtered = (FilteredSet<E>) unfiltered;
-      Predicate<E> combinedPredicate = Predicates.<E>and(filtered.predicate, predicate);
-      return new FilteredSet<E>((Set<E>) filtered.unfiltered, combinedPredicate);
+      Predicate<E> combinedPredicate
+          = Predicates.<E>and(filtered.predicate, predicate);
+      return new FilteredSet<E>(
+          (Set<E>) filtered.unfiltered, combinedPredicate);
     }
 
-    return new FilteredSet<E>(checkNotNull(unfiltered), checkNotNull(predicate));
+    return new FilteredSet<E>(
+        checkNotNull(unfiltered), checkNotNull(predicate));
   }
 
-  private static class FilteredSet<E> extends FilteredCollection<E> implements Set<E> {
+  private static class FilteredSet<E> extends FilteredCollection<E>
+      implements Set<E> {
     FilteredSet(Set<E> unfiltered, Predicate<? super E> predicate) {
       super(unfiltered, predicate);
     }
 
-    @Override
-    public boolean equals(@Nullable Object object) {
+    @Override public boolean equals(@Nullable Object object) {
       return equalsImpl(this, object);
     }
 
-    @Override
-    public int hashCode() {
+    @Override public int hashCode() {
       return hashCodeImpl(this);
     }
   }
@@ -881,19 +805,29 @@ public final class Sets {
    *
    * @since 11.0
    */
-  public static <E> SortedSet<E> filter(SortedSet<E> unfiltered, Predicate<? super E> predicate) {
+  public static <E> SortedSet<E> filter(
+      SortedSet<E> unfiltered, Predicate<? super E> predicate) {
+    return Platform.setsFilterSortedSet(unfiltered, predicate);
+  }
+
+  static <E> SortedSet<E> filterSortedIgnoreNavigable(
+      SortedSet<E> unfiltered, Predicate<? super E> predicate) {
     if (unfiltered instanceof FilteredSet) {
       // Support clear(), removeAll(), and retainAll() when filtering a filtered
       // collection.
       FilteredSet<E> filtered = (FilteredSet<E>) unfiltered;
-      Predicate<E> combinedPredicate = Predicates.<E>and(filtered.predicate, predicate);
-      return new FilteredSortedSet<E>((SortedSet<E>) filtered.unfiltered, combinedPredicate);
+      Predicate<E> combinedPredicate
+          = Predicates.<E>and(filtered.predicate, predicate);
+      return new FilteredSortedSet<E>(
+          (SortedSet<E>) filtered.unfiltered, combinedPredicate);
     }
 
-    return new FilteredSortedSet<E>(checkNotNull(unfiltered), checkNotNull(predicate));
+    return new FilteredSortedSet<E>(
+        checkNotNull(unfiltered), checkNotNull(predicate));
   }
 
-  private static class FilteredSortedSet<E> extends FilteredSet<E> implements SortedSet<E> {
+  private static class FilteredSortedSet<E> extends FilteredSet<E>
+      implements SortedSet<E> {
 
     FilteredSortedSet(SortedSet<E> unfiltered, Predicate<? super E> predicate) {
       super(unfiltered, predicate);
@@ -906,8 +840,8 @@ public final class Sets {
 
     @Override
     public SortedSet<E> subSet(E fromElement, E toElement) {
-      return new FilteredSortedSet<E>(
-          ((SortedSet<E>) unfiltered).subSet(fromElement, toElement), predicate);
+      return new FilteredSortedSet<E>(((SortedSet<E>) unfiltered).subSet(fromElement, toElement),
+          predicate);
     }
 
     @Override
@@ -967,7 +901,7 @@ public final class Sets {
    *
    * @since 14.0
    */
-  @GwtIncompatible // NavigableSet
+  @GwtIncompatible("NavigableSet")
   @SuppressWarnings("unchecked")
   public static <E> NavigableSet<E> filter(
       NavigableSet<E> unfiltered, Predicate<? super E> predicate) {
@@ -975,14 +909,17 @@ public final class Sets {
       // Support clear(), removeAll(), and retainAll() when filtering a filtered
       // collection.
       FilteredSet<E> filtered = (FilteredSet<E>) unfiltered;
-      Predicate<E> combinedPredicate = Predicates.<E>and(filtered.predicate, predicate);
-      return new FilteredNavigableSet<E>((NavigableSet<E>) filtered.unfiltered, combinedPredicate);
+      Predicate<E> combinedPredicate
+          = Predicates.<E>and(filtered.predicate, predicate);
+      return new FilteredNavigableSet<E>(
+          (NavigableSet<E>) filtered.unfiltered, combinedPredicate);
     }
 
-    return new FilteredNavigableSet<E>(checkNotNull(unfiltered), checkNotNull(predicate));
+    return new FilteredNavigableSet<E>(
+        checkNotNull(unfiltered), checkNotNull(predicate));
   }
 
-  @GwtIncompatible // NavigableSet
+  @GwtIncompatible("NavigableSet")
   private static class FilteredNavigableSet<E> extends FilteredSortedSet<E>
       implements NavigableSet<E> {
     FilteredNavigableSet(NavigableSet<E> unfiltered, Predicate<? super E> predicate) {
@@ -1113,7 +1050,8 @@ public final class Sets {
    *     or any element of a provided set is null
    * @since 2.0
    */
-  public static <B> Set<List<B>> cartesianProduct(List<? extends Set<? extends B>> sets) {
+  public static <B> Set<List<B>> cartesianProduct(
+      List<? extends Set<? extends B>> sets) {
     return CartesianSet.create(sets);
   }
 
@@ -1172,14 +1110,15 @@ public final class Sets {
    *     or any element of a provided set is null
    * @since 2.0
    */
-  public static <B> Set<List<B>> cartesianProduct(Set<? extends B>... sets) {
+  public static <B> Set<List<B>> cartesianProduct(
+      Set<? extends B>... sets) {
     return cartesianProduct(Arrays.asList(sets));
   }
 
-  private static final class CartesianSet<E> extends ForwardingCollection<List<E>>
-      implements Set<List<E>> {
-    private final transient ImmutableList<ImmutableSet<E>> axes;
-    private final transient CartesianList<E> delegate;
+  private static final class CartesianSet<E>
+      extends ForwardingCollection<List<E>> implements Set<List<E>> {
+    private transient final ImmutableList<ImmutableSet<E>> axes;
+    private transient final CartesianList<E> delegate;
 
     static <E> Set<List<E>> create(List<? extends Set<? extends E>> sets) {
       ImmutableList.Builder<ImmutableSet<E>> axesBuilder =
@@ -1192,27 +1131,28 @@ public final class Sets {
         axesBuilder.add(copy);
       }
       final ImmutableList<ImmutableSet<E>> axes = axesBuilder.build();
-      ImmutableList<List<E>> listAxes =
-          new ImmutableList<List<E>>() {
-            @Override
-            public int size() {
-              return axes.size();
-            }
+      ImmutableList<List<E>> listAxes = new ImmutableList<List<E>>() {
 
-            @Override
-            public List<E> get(int index) {
-              return axes.get(index).asList();
-            }
+        @Override
+        public int size() {
+          return axes.size();
+        }
 
-            @Override
-            boolean isPartialView() {
-              return true;
-            }
-          };
+        @Override
+        public List<E> get(int index) {
+          return axes.get(index).asList();
+        }
+
+        @Override
+        boolean isPartialView() {
+          return true;
+        }
+      };
       return new CartesianSet<E>(axes, new CartesianList<E>(listAxes));
     }
 
-    private CartesianSet(ImmutableList<ImmutableSet<E>> axes, CartesianList<E> delegate) {
+    private CartesianSet(
+        ImmutableList<ImmutableSet<E>> axes, CartesianList<E> delegate) {
       this.axes = axes;
       this.delegate = delegate;
     }
@@ -1222,8 +1162,7 @@ public final class Sets {
       return delegate;
     }
 
-    @Override
-    public boolean equals(@Nullable Object object) {
+    @Override public boolean equals(@Nullable Object object) {
       // Warning: this is broken if size() == 0, so it is critical that we
       // substitute an empty ImmutableSet to the user in place of this
       if (object instanceof CartesianSet) {
@@ -1338,33 +1277,33 @@ public final class Sets {
     final ImmutableMap<E, Integer> inputSet;
 
     PowerSet(Set<E> input) {
-      this.inputSet = Maps.indexMap(input);
-      checkArgument(
-          inputSet.size() <= 30, "Too many elements to create power set: %s > 30", inputSet.size());
+      ImmutableMap.Builder<E, Integer> builder = ImmutableMap.builder();
+      int i = 0;
+      for (E e : checkNotNull(input)) {
+        builder.put(e, i++);
+      }
+      this.inputSet = builder.build();
+      checkArgument(inputSet.size() <= 30,
+          "Too many elements to create power set: %s > 30", inputSet.size());
     }
 
-    @Override
-    public int size() {
+    @Override public int size() {
       return 1 << inputSet.size();
     }
 
-    @Override
-    public boolean isEmpty() {
+    @Override public boolean isEmpty() {
       return false;
     }
 
-    @Override
-    public Iterator<Set<E>> iterator() {
+    @Override public Iterator<Set<E>> iterator() {
       return new AbstractIndexedListIterator<Set<E>>(size()) {
-        @Override
-        protected Set<E> get(final int setBits) {
+        @Override protected Set<E> get(final int setBits) {
           return new SubSet<E>(inputSet, setBits);
         }
       };
     }
 
-    @Override
-    public boolean contains(@Nullable Object obj) {
+    @Override public boolean contains(@Nullable Object obj) {
       if (obj instanceof Set) {
         Set<?> set = (Set<?>) obj;
         return inputSet.keySet().containsAll(set);
@@ -1372,8 +1311,7 @@ public final class Sets {
       return false;
     }
 
-    @Override
-    public boolean equals(@Nullable Object obj) {
+    @Override public boolean equals(@Nullable Object obj) {
       if (obj instanceof PowerSet) {
         PowerSet<?> that = (PowerSet<?>) obj;
         return inputSet.equals(that.inputSet);
@@ -1381,8 +1319,7 @@ public final class Sets {
       return super.equals(obj);
     }
 
-    @Override
-    public int hashCode() {
+    @Override public int hashCode() {
       /*
        * The sum of the sums of the hash codes in each subset is just the sum of
        * each input element's hash code times the number of sets that element
@@ -1391,8 +1328,7 @@ public final class Sets {
       return inputSet.keySet().hashCode() << (inputSet.size() - 1);
     }
 
-    @Override
-    public String toString() {
+    @Override public String toString() {
       return "powerSet(" + inputSet + ")";
     }
   }
@@ -1448,17 +1384,19 @@ public final class Sets {
    * @return an unmodifiable view of the specified navigable set
    * @since 12.0
    */
-  @GwtIncompatible // NavigableSet
-  public static <E> NavigableSet<E> unmodifiableNavigableSet(NavigableSet<E> set) {
-    if (set instanceof ImmutableSortedSet || set instanceof UnmodifiableNavigableSet) {
+  @GwtIncompatible("NavigableSet")
+  public static <E> NavigableSet<E> unmodifiableNavigableSet(
+      NavigableSet<E> set) {
+    if (set instanceof ImmutableSortedSet
+        || set instanceof UnmodifiableNavigableSet) {
       return set;
     }
     return new UnmodifiableNavigableSet<E>(set);
   }
 
-  @GwtIncompatible // NavigableSet
-  static final class UnmodifiableNavigableSet<E> extends ForwardingSortedSet<E>
-      implements NavigableSet<E>, Serializable {
+  @GwtIncompatible("NavigableSet")
+  static final class UnmodifiableNavigableSet<E>
+      extends ForwardingSortedSet<E> implements NavigableSet<E>, Serializable {
     private final NavigableSet<E> delegate;
 
     UnmodifiableNavigableSet(NavigableSet<E> delegate) {
@@ -1506,7 +1444,8 @@ public final class Sets {
     public NavigableSet<E> descendingSet() {
       UnmodifiableNavigableSet<E> result = descendingSet;
       if (result == null) {
-        result = descendingSet = new UnmodifiableNavigableSet<E>(delegate.descendingSet());
+        result = descendingSet = new UnmodifiableNavigableSet<E>(
+            delegate.descendingSet());
         result.descendingSet = this;
       }
       return result;
@@ -1519,9 +1458,15 @@ public final class Sets {
 
     @Override
     public NavigableSet<E> subSet(
-        E fromElement, boolean fromInclusive, E toElement, boolean toInclusive) {
-      return unmodifiableNavigableSet(
-          delegate.subSet(fromElement, fromInclusive, toElement, toInclusive));
+        E fromElement,
+        boolean fromInclusive,
+        E toElement,
+        boolean toInclusive) {
+      return unmodifiableNavigableSet(delegate.subSet(
+          fromElement,
+          fromInclusive,
+          toElement,
+          toInclusive));
     }
 
     @Override
@@ -1531,7 +1476,8 @@ public final class Sets {
 
     @Override
     public NavigableSet<E> tailSet(E fromElement, boolean inclusive) {
-      return unmodifiableNavigableSet(delegate.tailSet(fromElement, inclusive));
+      return unmodifiableNavigableSet(
+          delegate.tailSet(fromElement, inclusive));
     }
 
     private static final long serialVersionUID = 0;
@@ -1580,8 +1526,9 @@ public final class Sets {
    * @return a synchronized view of the specified navigable set.
    * @since 13.0
    */
-  @GwtIncompatible // NavigableSet
-  public static <E> NavigableSet<E> synchronizedNavigableSet(NavigableSet<E> navigableSet) {
+  @GwtIncompatible("NavigableSet")
+  public static <E> NavigableSet<E> synchronizedNavigableSet(
+      NavigableSet<E> navigableSet) {
     return Synchronized.navigableSet(navigableSet);
   }
 
@@ -1615,7 +1562,7 @@ public final class Sets {
     }
   }
 
-  @GwtIncompatible // NavigableSet
+  @GwtIncompatible("NavigableSet")
   static class DescendingSet<E> extends ForwardingNavigableSet<E> {
     private final NavigableSet<E> forward;
 
@@ -1670,7 +1617,10 @@ public final class Sets {
 
     @Override
     public NavigableSet<E> subSet(
-        E fromElement, boolean fromInclusive, E toElement, boolean toInclusive) {
+        E fromElement,
+        boolean fromInclusive,
+        E toElement,
+        boolean toInclusive) {
       return forward.subSet(toElement, toInclusive, fromElement, fromInclusive).descendingSet();
     }
 
@@ -1744,48 +1694,5 @@ public final class Sets {
     public String toString() {
       return standardToString();
     }
-  }
-
-  /**
-   * Returns a view of the portion of {@code set} whose elements are contained by {@code range}.
-   *
-   * <p>This method delegates to the appropriate methods of {@link NavigableSet} (namely
-   * {@link NavigableSet#subSet(Object, boolean, Object, boolean) subSet()},
-   * {@link NavigableSet#tailSet(Object, boolean) tailSet()}, and
-   * {@link NavigableSet#headSet(Object, boolean) headSet()}) to actually construct the view.
-   * Consult these methods for a full description of the returned view's behavior.
-   *
-   * <p><b>Warning:</b> {@code Range}s always represent a range of values using the values' natural
-   * ordering. {@code NavigableSet} on the other hand can specify a custom ordering via a
-   * {@link Comparator}, which can violate the natural ordering. Using this method (or in general
-   * using {@code Range}) with unnaturally-ordered sets can lead to unexpected and undefined
-   * behavior.
-   *
-   * @since 20.0
-   */
-  @Beta
-  @GwtIncompatible // NavigableSet
-  public static <K extends Comparable<? super K>> NavigableSet<K> subSet(
-      NavigableSet<K> set, Range<K> range) {
-    if (set.comparator() != null
-        && set.comparator() != Ordering.natural()
-        && range.hasLowerBound()
-        && range.hasUpperBound()) {
-      checkArgument(
-          set.comparator().compare(range.lowerEndpoint(), range.upperEndpoint()) <= 0,
-          "set is using a custom comparator which is inconsistent with the natural ordering.");
-    }
-    if (range.hasLowerBound() && range.hasUpperBound()) {
-      return set.subSet(
-          range.lowerEndpoint(),
-          range.lowerBoundType() == BoundType.CLOSED,
-          range.upperEndpoint(),
-          range.upperBoundType() == BoundType.CLOSED);
-    } else if (range.hasLowerBound()) {
-      return set.tailSet(range.lowerEndpoint(), range.lowerBoundType() == BoundType.CLOSED);
-    } else if (range.hasUpperBound()) {
-      return set.headSet(range.upperEndpoint(), range.upperBoundType() == BoundType.CLOSED);
-    }
-    return checkNotNull(set);
   }
 }

@@ -20,7 +20,6 @@ import static com.google.common.collect.CollectPreconditions.checkRemove;
 import static com.google.common.collect.Maps.keyOrNull;
 
 import com.google.common.annotations.Beta;
-import com.google.common.annotations.GwtIncompatible;
 
 import java.util.Iterator;
 import java.util.NavigableMap;
@@ -33,15 +32,11 @@ import java.util.SortedMap;
  * override one or more methods to modify the behavior of the backing map as desired per the <a
  * href="http://en.wikipedia.org/wiki/Decorator_pattern">decorator pattern</a>.
  *
- * <p><b>Warning:</b> The methods of {@code ForwardingNavigableMap} forward <i>indiscriminately</i>
+ * <p><i>Warning:</i> The methods of {@code ForwardingNavigableMap} forward <i>indiscriminately</i>
  * to the methods of the delegate. For example, overriding {@link #put} alone <i>will not</i>
  * change the behavior of {@link #putAll}, which can lead to unexpected behavior. In this case, you
  * should override {@code putAll} as well, either providing your own implementation, or delegating
  * to the provided {@code standardPutAll} method.
- *
- * <p><b>{@code default} method warning:</b> This class does <i>not</i> forward calls to {@code
- * default} methods. Instead, it inherits their default implementations. When those implementations
- * invoke methods, they invoke methods on the {@code ForwardingNavigableMap}.
  *
  * <p>Each of the {@code standard} methods uses the map's comparator (or the natural ordering of
  * the elements, if there is no comparator) to test element equality. As a result, if the comparator
@@ -54,9 +49,8 @@ import java.util.SortedMap;
  * @author Louis Wasserman
  * @since 12.0
  */
-@GwtIncompatible
-public abstract class ForwardingNavigableMap<K, V> extends ForwardingSortedMap<K, V>
-    implements NavigableMap<K, V> {
+public abstract class ForwardingNavigableMap<K, V>
+    extends ForwardingSortedMap<K, V> implements NavigableMap<K, V> {
 
   /** Constructor for use by subclasses. */
   protected ForwardingNavigableMap() {}

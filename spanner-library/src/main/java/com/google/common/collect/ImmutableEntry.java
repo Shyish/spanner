@@ -26,7 +26,8 @@ import javax.annotation.Nullable;
  * @see com.google.common.collect.Maps#immutableEntry(Object, Object)
  */
 @GwtCompatible(serializable = true)
-class ImmutableEntry<K, V> extends AbstractMapEntry<K, V> implements Serializable {
+class ImmutableEntry<K, V> extends AbstractMapEntry<K, V>
+    implements Serializable {
   final K key;
   final V value;
 
@@ -35,20 +36,15 @@ class ImmutableEntry<K, V> extends AbstractMapEntry<K, V> implements Serializabl
     this.value = value;
   }
 
-  @Nullable
-  @Override
-  public final K getKey() {
+  @Nullable @Override public final K getKey() {
     return key;
   }
 
-  @Nullable
-  @Override
-  public final V getValue() {
+  @Nullable @Override public final V getValue() {
     return value;
   }
 
-  @Override
-  public final V setValue(V value) {
+  @Override public final V setValue(V value) {
     throw new UnsupportedOperationException();
   }
 

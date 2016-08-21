@@ -1,15 +1,17 @@
 /*
  * Copyright (C) 2010 The Guava Authors
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
- * the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.google.common.base;
@@ -28,17 +30,11 @@ import javax.annotation.Nullable;
  * equivalences are the {@linkplain #identity() identity equivalence} and {@linkplain #equals equals
  * equivalence}.
  *
- * <h3>For Java 8+ users</h3>
- *
- * <p>A future version of this class will implement {@code BiPredicate<T, T>}. In the meantime, to
- * use an equivalence (say, named {@code equivalence}) as a bi-predicate, use the method reference
- * {@code equivalence::equivalent}.
- *
  * @author Bob Lee
  * @author Ben Yu
  * @author Gregory Kick
- * @since 10.0 (<a href="https://github.com/google/guava/wiki/Compatibility">mostly
- *     source-compatible</a> since 4.0)
+ * @since 10.0 (<a href="http://code.google.com/p/guava-libraries/wiki/Compatibility"
+ *        >mostly source-compatible</a> since 4.0)
  */
 @GwtCompatible
 public abstract class Equivalence<T> {
@@ -78,8 +74,8 @@ public abstract class Equivalence<T> {
   /**
    * Returns {@code true} if {@code a} and {@code b} are considered equivalent.
    *
-   * <p>Called by {@link #equivalent}. {@code a} and {@code b} are not the same object and are not
-   * nulls.
+   * <p>Called by {@link #equivalent}. {@code a} and {@code b} are not the same
+   * object and are not nulls.
    *
    * @since 10.0 (previously, subclasses would override equivalent())
    */
@@ -96,8 +92,8 @@ public abstract class Equivalence<T> {
    *     one execution of an application to another execution of the same application.
    * <li>It is <i>distributable across equivalence</i>: for any references {@code x} and {@code y},
    *     if {@code equivalent(x, y)}, then {@code hash(x) == hash(y)}. It is <i>not</i> necessary
-   *     that the hash be distributable across <i>inequivalence</i>. If {@code equivalence(x, y)} is
-   *     false, {@code hash(x) == hash(y)} may still be true.
+   *     that the hash be distributable across <i>inequivalence</i>. If {@code equivalence(x, y)}
+   *     is false, {@code hash(x) == hash(y)} may still be true.
    * <li>{@code hash(null)} is {@code 0}.
    * </ul>
    */
@@ -128,26 +124,27 @@ public abstract class Equivalence<T> {
    *
    * <pre>   {@code
    *    Equivalence<Person> SAME_AGE = Equivalence.equals().onResultOf(GET_PERSON_AGE);}</pre>
-   *
+   * 
    * <p>{@code function} will never be invoked with a null value.
-   *
+   * 
    * <p>Note that {@code function} must be consistent according to {@code this} equivalence
    * relation. That is, invoking {@link Function#apply} multiple times for a given value must return
-   * equivalent results. For example,
-   * {@code Equivalence.identity().onResultOf(Functions.toStringFunction())} is broken because it's
-   * not guaranteed that {@link Object#toString}) always returns the same string instance.
-   *
+   * equivalent results.
+   * For example, {@code Equivalence.identity().onResultOf(Functions.toStringFunction())} is broken
+   * because it's not guaranteed that {@link Object#toString}) always returns the same string
+   * instance.
+   * 
    * @since 10.0
    */
   public final <F> Equivalence<F> onResultOf(Function<F, ? extends T> function) {
     return new FunctionalEquivalence<F, T>(function, this);
   }
-
+  
   /**
-   * Returns a wrapper of {@code reference} that implements {@link Wrapper#equals(Object)
-   * Object.equals()} such that {@code wrap(a).equals(wrap(b))} if and only if
-   * {@code equivalent(a, b)}.
-   *
+   * Returns a wrapper of {@code reference} that implements
+   * {@link Wrapper#equals(Object) Object.equals()} such that
+   * {@code wrap(a).equals(wrap(b))} if and only if {@code equivalent(a, b)}.
+   * 
    * @since 10.0
    */
   public final <S extends T> Wrapper<S> wrap(@Nullable S reference) {
@@ -182,8 +179,7 @@ public abstract class Equivalence<T> {
     }
 
     /** Returns the (possibly null) reference wrapped by this instance. */
-    @Nullable
-    public T get() {
+    @Nullable public T get() {
       return reference;
     }
 
@@ -192,8 +188,7 @@ public abstract class Equivalence<T> {
      * references is {@code true} and both wrappers use the {@link Object#equals(Object) same}
      * equivalence.
      */
-    @Override
-    public boolean equals(@Nullable Object obj) {
+    @Override public boolean equals(@Nullable Object obj) {
       if (obj == this) {
         return true;
       }
@@ -216,8 +211,7 @@ public abstract class Equivalence<T> {
     /**
      * Returns the result of {@link Equivalence#hash(Object)} applied to the wrapped reference.
      */
-    @Override
-    public int hashCode() {
+    @Override public int hashCode() {
       return equivalence.hash(reference);
     }
 
@@ -225,8 +219,7 @@ public abstract class Equivalence<T> {
      * Returns a string representation for this equivalence wrapper. The form of this string
      * representation is not specified.
      */
-    @Override
-    public String toString() {
+    @Override public String toString() {
       return equivalence + ".wrap(" + reference + ")";
     }
 
@@ -234,13 +227,13 @@ public abstract class Equivalence<T> {
   }
 
   /**
-   * Returns an equivalence over iterables based on the equivalence of their elements. More
+   * Returns an equivalence over iterables based on the equivalence of their elements.  More
    * specifically, two iterables are considered equivalent if they both contain the same number of
-   * elements, and each pair of corresponding elements is equivalent according to {@code this}. Null
-   * iterables are equivalent to one another.
-   *
-   * <p>Note that this method performs a similar function for equivalences as
-   * {@link com.google.common.collect.Ordering#lexicographical} does for orderings.
+   * elements, and each pair of corresponding elements is equivalent according to
+   * {@code this}.  Null iterables are equivalent to one another.
+   * 
+   * <p>Note that this method performs a similar function for equivalences as {@link
+   * com.google.common.collect.Ordering#lexicographical} does for orderings.
    *
    * @since 10.0
    */
@@ -250,11 +243,11 @@ public abstract class Equivalence<T> {
     // the need for this is so rare that it's not worth making callers deal with the ugly wildcard.
     return new PairwiseEquivalence<S>(this);
   }
-
+  
   /**
-   * Returns a predicate that evaluates to true if and only if the input is equivalent to
-   * {@code target} according to this equivalence relation.
-   *
+   * Returns a predicate that evaluates to true if and only if the input is
+   * equivalent to {@code target} according to this equivalence relation.
+   * 
    * @since 10.0
    */
   @Beta
@@ -272,30 +265,27 @@ public abstract class Equivalence<T> {
       this.target = target;
     }
 
-    @Override
-    public boolean apply(@Nullable T input) {
+    @Override public boolean apply(@Nullable T input) {
       return equivalence.equivalent(input, target);
     }
 
-    @Override
-    public boolean equals(@Nullable Object obj) {
+    @Override public boolean equals(@Nullable Object obj) {
       if (this == obj) {
         return true;
       }
       if (obj instanceof EquivalentToPredicate) {
         EquivalentToPredicate<?> that = (EquivalentToPredicate<?>) obj;
-        return equivalence.equals(that.equivalence) && Objects.equal(target, that.target);
+        return equivalence.equals(that.equivalence)
+            && Objects.equal(target, that.target);
       }
       return false;
     }
 
-    @Override
-    public int hashCode() {
+    @Override public int hashCode() {
       return Objects.hashCode(equivalence, target);
     }
 
-    @Override
-    public String toString() {
+    @Override public String toString() {
       return equivalence + ".equivalentTo(" + target + ")";
     }
 
@@ -317,10 +307,9 @@ public abstract class Equivalence<T> {
   }
 
   /**
-   * Returns an equivalence that uses {@code ==} to compare values and
-   * {@link System#identityHashCode(Object)} to compute the hash code.
-   * {@link Equivalence#equivalent} returns {@code true} if {@code a == b}, including in the case
-   * that a and b are both null.
+   * Returns an equivalence that uses {@code ==} to compare values and {@link
+   * System#identityHashCode(Object)} to compute the hash code.  {@link Equivalence#equivalent}
+   * returns {@code true} if {@code a == b}, including in the case that a and b are both null.
    *
    * @since 13.0
    * @since 4.0 (in Equivalences)
@@ -329,45 +318,40 @@ public abstract class Equivalence<T> {
     return Identity.INSTANCE;
   }
 
-  static final class Equals extends Equivalence<Object> implements Serializable {
-
+  static final class Equals extends Equivalence<Object>
+      implements Serializable {
+    
     static final Equals INSTANCE = new Equals();
 
-    @Override
-    protected boolean doEquivalent(Object a, Object b) {
+    @Override protected boolean doEquivalent(Object a, Object b) {
       return a.equals(b);
     }
-
-    @Override
-    protected int doHash(Object o) {
+    @Override protected int doHash(Object o) {
       return o.hashCode();
     }
 
     private Object readResolve() {
       return INSTANCE;
-    }
-
+    } 
     private static final long serialVersionUID = 1;
   }
-
-  static final class Identity extends Equivalence<Object> implements Serializable {
-
+  
+  static final class Identity extends Equivalence<Object>
+      implements Serializable {
+    
     static final Identity INSTANCE = new Identity();
-
-    @Override
-    protected boolean doEquivalent(Object a, Object b) {
+    
+    @Override protected boolean doEquivalent(Object a, Object b) {
       return false;
     }
 
-    @Override
-    protected int doHash(Object o) {
+    @Override protected int doHash(Object o) {
       return System.identityHashCode(o);
     }
-
+ 
     private Object readResolve() {
       return INSTANCE;
     }
-
     private static final long serialVersionUID = 1;
   }
 }

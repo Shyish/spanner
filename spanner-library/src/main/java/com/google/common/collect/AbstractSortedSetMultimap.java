@@ -17,7 +17,6 @@
 package com.google.common.collect;
 
 import com.google.common.annotations.GwtCompatible;
-import com.google.errorprone.annotations.CanIgnoreReturnValue;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -36,8 +35,8 @@ import javax.annotation.Nullable;
  * @author Jared Levy
  */
 @GwtCompatible
-abstract class AbstractSortedSetMultimap<K, V> extends AbstractSetMultimap<K, V>
-    implements SortedSetMultimap<K, V> {
+abstract class AbstractSortedSetMultimap<K, V>
+    extends AbstractSetMultimap<K, V> implements SortedSetMultimap<K, V> {
   /**
    * Creates a new multimap that uses the provided map.
    *
@@ -75,8 +74,7 @@ abstract class AbstractSortedSetMultimap<K, V> extends AbstractSetMultimap<K, V>
    * key, this method returns a {@link SortedSet}, instead of the
    * {@link Collection} specified in the {@link Multimap} interface.
    */
-  @Override
-  public SortedSet<V> get(@Nullable K key) {
+  @Override public SortedSet<V> get(@Nullable K key) {
     return (SortedSet<V>) super.get(key);
   }
 
@@ -88,9 +86,7 @@ abstract class AbstractSortedSetMultimap<K, V> extends AbstractSetMultimap<K, V>
    * key, this method returns a {@link SortedSet}, instead of the
    * {@link Collection} specified in the {@link Multimap} interface.
    */
-  @CanIgnoreReturnValue
-  @Override
-  public SortedSet<V> removeAll(@Nullable Object key) {
+  @Override public SortedSet<V> removeAll(@Nullable Object key) {
     return (SortedSet<V>) super.removeAll(key);
   }
 
@@ -104,9 +100,8 @@ abstract class AbstractSortedSetMultimap<K, V> extends AbstractSetMultimap<K, V>
    *
    * <p>Any duplicates in {@code values} will be stored in the multimap once.
    */
-  @CanIgnoreReturnValue
-  @Override
-  public SortedSet<V> replaceValues(@Nullable K key, Iterable<? extends V> values) {
+  @Override public SortedSet<V> replaceValues(
+      @Nullable K key, Iterable<? extends V> values) {
     return (SortedSet<V>) super.replaceValues(key, values);
   }
 
@@ -124,8 +119,7 @@ abstract class AbstractSortedSetMultimap<K, V> extends AbstractSetMultimap<K, V>
    * <p>Though the method signature doesn't say so explicitly, the returned map
    * has {@link SortedSet} values.
    */
-  @Override
-  public Map<K, Collection<V>> asMap() {
+  @Override public Map<K, Collection<V>> asMap() {
     return super.asMap();
   }
 
@@ -135,8 +129,7 @@ abstract class AbstractSortedSetMultimap<K, V> extends AbstractSetMultimap<K, V>
    * Consequently, the values do not follow their natural ordering or the
    * ordering of the value comparator.
    */
-  @Override
-  public Collection<V> values() {
+  @Override public Collection<V> values() {
     return super.values();
   }
 

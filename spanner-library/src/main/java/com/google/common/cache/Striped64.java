@@ -11,7 +11,7 @@
 
 package com.google.common.cache;
 
-import com.google.common.annotations.GwtIncompatible;
+import com.ironz.unsafe.UnsafeAndroid;
 
 import java.util.Random;
 
@@ -20,7 +20,6 @@ import java.util.Random;
  * for classes supporting dynamic striping on 64bit values. The class
  * extends Number so that concrete subclasses must publicly do so.
  */
-@GwtIncompatible
 abstract class Striped64 extends Number {
     /*
      * This class maintains a lazily-initialized table of atomically
@@ -104,11 +103,11 @@ abstract class Striped64 extends Number {
         }
 
         // Unsafe mechanics
-        private static final sun.misc.Unsafe UNSAFE;
+        private static final UnsafeAndroid UNSAFE;
         private static final long valueOffset;
         static {
             try {
-                UNSAFE = getUnsafe();
+                UNSAFE = new UnsafeAndroid();
                 Class<?> ak = Cell.class;
                 valueOffset = UNSAFE.objectFieldOffset
                     (ak.getDeclaredField("value"));
@@ -293,12 +292,12 @@ abstract class Striped64 extends Number {
     }
 
     // Unsafe mechanics
-    private static final sun.misc.Unsafe UNSAFE;
+    private static final UnsafeAndroid UNSAFE;
     private static final long baseOffset;
     private static final long busyOffset;
     static {
         try {
-            UNSAFE = getUnsafe();
+            UNSAFE = new UnsafeAndroid();
             Class<?> sk = Striped64.class;
             baseOffset = UNSAFE.objectFieldOffset
                 (sk.getDeclaredField("base"));
@@ -306,36 +305,6 @@ abstract class Striped64 extends Number {
                 (sk.getDeclaredField("busy"));
         } catch (Exception e) {
             throw new Error(e);
-        }
-    }
-
-    /**
-     * Returns a sun.misc.Unsafe.  Suitable for use in a 3rd party package.
-     * Replace with a simple call to Unsafe.getUnsafe when integrating
-     * into a jdk.
-     *
-     * @return a sun.misc.Unsafe
-     */
-    private static sun.misc.Unsafe getUnsafe() {
-        try {
-            return sun.misc.Unsafe.getUnsafe();
-        } catch (SecurityException tryReflectionInstead) {}
-        try {
-            return java.security.AccessController.doPrivileged
-            (new java.security.PrivilegedExceptionAction<sun.misc.Unsafe>() {
-                public sun.misc.Unsafe run() throws Exception {
-                    Class<sun.misc.Unsafe> k = sun.misc.Unsafe.class;
-                    for (java.lang.reflect.Field f : k.getDeclaredFields()) {
-                        f.setAccessible(true);
-                        Object x = f.get(null);
-                        if (k.isInstance(x))
-                            return k.cast(x);
-                    }
-                    throw new NoSuchFieldError("the Unsafe");
-                }});
-        } catch (java.security.PrivilegedActionException e) {
-            throw new RuntimeException("Could not initialize intrinsics",
-                                       e.getCause());
         }
     }
 }

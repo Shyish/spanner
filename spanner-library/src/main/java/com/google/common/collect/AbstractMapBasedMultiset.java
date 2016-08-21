@@ -24,7 +24,6 @@ import static com.google.common.collect.CollectPreconditions.checkRemove;
 import com.google.common.annotations.GwtCompatible;
 import com.google.common.annotations.GwtIncompatible;
 import com.google.common.primitives.Ints;
-import com.google.errorprone.annotations.CanIgnoreReturnValue;
 
 import java.io.InvalidObjectException;
 import java.io.ObjectStreamException;
@@ -46,7 +45,8 @@ import javax.annotation.Nullable;
  * @author Kevin Bourrillion
  */
 @GwtCompatible(emulated = true)
-abstract class AbstractMapBasedMultiset<E> extends AbstractMultiset<E> implements Serializable {
+abstract class AbstractMapBasedMultiset<E> extends AbstractMultiset<E>
+    implements Serializable {
 
   private transient Map<E, Count> backingMap;
 
@@ -84,7 +84,8 @@ abstract class AbstractMapBasedMultiset<E> extends AbstractMultiset<E> implement
 
   @Override
   Iterator<Entry<E>> entryIterator() {
-    final Iterator<Map.Entry<E, Count>> backingEntries = backingMap.entrySet().iterator();
+    final Iterator<Map.Entry<E, Count>> backingEntries =
+        backingMap.entrySet().iterator();
     return new Iterator<Multiset.Entry<E>>() {
       Map.Entry<E, Count> toRemove;
 
@@ -102,7 +103,6 @@ abstract class AbstractMapBasedMultiset<E> extends AbstractMultiset<E> implement
           public E getElement() {
             return mapEntry.getKey();
           }
-
           @Override
           public int getCount() {
             Count count = mapEntry.getValue();
@@ -143,13 +143,11 @@ abstract class AbstractMapBasedMultiset<E> extends AbstractMultiset<E> implement
 
   // Optimizations - Query Operations
 
-  @Override
-  public int size() {
+  @Override public int size() {
     return Ints.saturatedCast(size);
   }
 
-  @Override
-  public Iterator<E> iterator() {
+  @Override public Iterator<E> iterator() {
     return new MapBasedMultisetIterator();
   }
 
@@ -199,8 +197,7 @@ abstract class AbstractMapBasedMultiset<E> extends AbstractMultiset<E> implement
     }
   }
 
-  @Override
-  public int count(@Nullable Object element) {
+  @Override public int count(@Nullable Object element) {
     Count frequency = Maps.safeGet(backingMap, element);
     return (frequency == null) ? 0 : frequency.get();
   }
@@ -214,13 +211,12 @@ abstract class AbstractMapBasedMultiset<E> extends AbstractMultiset<E> implement
    *     {@link Integer#MAX_VALUE} occurrences of {@code element} in this
    *     multiset.
    */
-  @CanIgnoreReturnValue
-  @Override
-  public int add(@Nullable E element, int occurrences) {
+  @Override public int add(@Nullable E element, int occurrences) {
     if (occurrences == 0) {
       return count(element);
     }
-    checkArgument(occurrences > 0, "occurrences cannot be negative: %s", occurrences);
+    checkArgument(
+        occurrences > 0, "occurrences cannot be negative: %s", occurrences);
     Count frequency = backingMap.get(element);
     int oldCount;
     if (frequency == null) {
@@ -229,20 +225,20 @@ abstract class AbstractMapBasedMultiset<E> extends AbstractMultiset<E> implement
     } else {
       oldCount = frequency.get();
       long newCount = (long) oldCount + (long) occurrences;
-      checkArgument(newCount <= Integer.MAX_VALUE, "too many occurrences: %s", newCount);
-      frequency.add(occurrences);
+      checkArgument(newCount <= Integer.MAX_VALUE,
+          "too many occurrences: %s", newCount);
+      frequency.getAndAdd(occurrences);
     }
     size += occurrences;
     return oldCount;
   }
 
-  @CanIgnoreReturnValue
-  @Override
-  public int remove(@Nullable Object element, int occurrences) {
+  @Override public int remove(@Nullable Object element, int occurrences) {
     if (occurrences == 0) {
       return count(element);
     }
-    checkArgument(occurrences > 0, "occurrences cannot be negative: %s", occurrences);
+    checkArgument(
+        occurrences > 0, "occurrences cannot be negative: %s", occurrences);
     Count frequency = backingMap.get(element);
     if (frequency == null) {
       return 0;
@@ -258,15 +254,13 @@ abstract class AbstractMapBasedMultiset<E> extends AbstractMultiset<E> implement
       backingMap.remove(element);
     }
 
-    frequency.add(-numberRemoved);
+    frequency.addAndGet(-numberRemoved);
     size -= numberRemoved;
     return oldCount;
   }
 
   // Roughly a 33% performance improvement over AbstractMultiset.setCount().
-  @CanIgnoreReturnValue
-  @Override
-  public int setCount(@Nullable E element, int count) {
+  @Override public int setCount(@Nullable E element, int count) {
     checkNonnegative(count, "count");
 
     Count existingCounter;
@@ -287,7 +281,7 @@ abstract class AbstractMapBasedMultiset<E> extends AbstractMultiset<E> implement
     return oldCount;
   }
 
-  private static int getAndSet(@Nullable Count i, int count) {
+  private static int getAndSet(Count i, int count) {
     if (i == null) {
       return 0;
     }
@@ -296,11 +290,12 @@ abstract class AbstractMapBasedMultiset<E> extends AbstractMultiset<E> implement
   }
 
   // Don't allow default serialization.
-  @GwtIncompatible // java.io.ObjectStreamException
+  @GwtIncompatible("java.io.ObjectStreamException")
+  @SuppressWarnings("unused") // actually used during deserialization
   private void readObjectNoData() throws ObjectStreamException {
     throw new InvalidObjectException("Stream data required");
   }
 
-  @GwtIncompatible // not needed in emulated source.
+  @GwtIncompatible("not needed in emulated source.")
   private static final long serialVersionUID = -2250766705698539974L;
 }

@@ -15,7 +15,6 @@
 package com.google.common.hash;
 
 import com.google.common.annotations.Beta;
-import com.google.errorprone.annotations.CanIgnoreReturnValue;
 
 import java.nio.charset.Charset;
 
@@ -26,7 +25,6 @@ import java.nio.charset.Charset;
  * @since 12.0 (in 11.0 as {@code Sink})
  */
 @Beta
-@CanIgnoreReturnValue
 public interface PrimitiveSink {
   /**
    * Puts a byte into this sink.
@@ -53,7 +51,7 @@ public interface PrimitiveSink {
    * @param len the number of bytes to write
    * @return this instance
    * @throws IndexOutOfBoundsException if {@code off < 0} or {@code off + len > bytes.length} or
-   *     {@code len < 0}
+   *   {@code len < 0}
    */
   PrimitiveSink putBytes(byte[] bytes, int off, int len);
 

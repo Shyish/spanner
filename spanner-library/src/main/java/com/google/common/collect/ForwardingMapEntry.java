@@ -31,7 +31,7 @@ import javax.annotation.Nullable;
  * backing map entry as desired per the <a
  * href="http://en.wikipedia.org/wiki/Decorator_pattern">decorator pattern</a>.
  *
- * <p><b>Warning:</b> The methods of {@code ForwardingMapEntry} forward
+ * <p><i>Warning:</i> The methods of {@code ForwardingMapEntry} forward
  * <i>indiscriminately</i> to the methods of the delegate. For example,
  * overriding {@link #getValue} alone <i>will not</i> change the behavior of
  * {@link #equals}, which can lead to unexpected behavior. In this case, you
@@ -49,17 +49,17 @@ import javax.annotation.Nullable;
  *
  * @author Mike Bostock
  * @author Louis Wasserman
- * @since 2.0
+ * @since 2.0 (imported from Google Collections Library)
  */
 @GwtCompatible
-public abstract class ForwardingMapEntry<K, V> extends ForwardingObject implements Map.Entry<K, V> {
-  // TODO(lowasser): identify places where thread safety is actually lost
+public abstract class ForwardingMapEntry<K, V>
+    extends ForwardingObject implements Map.Entry<K, V> {
+  // TODO(user): identify places where thread safety is actually lost
 
   /** Constructor for use by subclasses. */
   protected ForwardingMapEntry() {}
 
-  @Override
-  protected abstract Map.Entry<K, V> delegate();
+  @Override protected abstract Map.Entry<K, V> delegate();
 
   @Override
   public K getKey() {
@@ -76,13 +76,11 @@ public abstract class ForwardingMapEntry<K, V> extends ForwardingObject implemen
     return delegate().setValue(value);
   }
 
-  @Override
-  public boolean equals(@Nullable Object object) {
+  @Override public boolean equals(@Nullable Object object) {
     return delegate().equals(object);
   }
 
-  @Override
-  public int hashCode() {
+  @Override public int hashCode() {
     return delegate().hashCode();
   }
 
@@ -124,8 +122,7 @@ public abstract class ForwardingMapEntry<K, V> extends ForwardingObject implemen
    *
    * @since 7.0
    */
-  @Beta
-  protected String standardToString() {
+  @Beta protected String standardToString() {
     return getKey() + "=" + getValue();
   }
 }

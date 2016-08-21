@@ -17,20 +17,19 @@
 package com.google.common.collect;
 
 import com.google.common.annotations.GwtCompatible;
-import com.google.errorprone.annotations.CanIgnoreReturnValue;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
  * An iterator that supports a one-element lookahead while iterating.
- *
+ * 
  * <p>See the Guava User Guide article on <a href=
- * "https://github.com/google/guava/wiki/CollectionHelpersExplained#peekingiterator">
+ * "http://code.google.com/p/guava-libraries/wiki/CollectionHelpersExplained#PeekingIterator">
  * {@code PeekingIterator}</a>.
  *
  * @author Mick Killianey
- * @since 2.0
+ * @since 2.0 (imported from Google Collections Library)
  */
 @GwtCompatible
 public interface PeekingIterator<E> extends Iterator<E> {
@@ -52,7 +51,6 @@ public interface PeekingIterator<E> extends Iterator<E> {
    * <p>The objects returned by consecutive calls to {@link #peek()} then {@link
    * #next()} are guaranteed to be equal to each other.
    */
-  @CanIgnoreReturnValue
   @Override
   E next();
 
