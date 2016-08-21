@@ -1,7 +1,4 @@
 apply plugin: 'com.android.library'
-apply plugin: 'maven-publish'
-apply plugin: 'com.jfrog.bintray'
-apply plugin: 'com.jfrog.artifactory'
 apply plugin: 'checkstyle'
 
 android {
@@ -56,118 +53,8 @@ dependencies {
     compile 'com.google.errorprone:error_prone_annotations:2.0.11'
     compile 'com.google.j2objc:j2objc-annotations:1.1'
     compile 'com.google.code.findbugs:jsr305:+'
-}
-
-
-task sourcesJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    classifier = 'sources'
-}
-
-task javadoc(type: Javadoc) {
-    source = android.sourceSets.main.java.srcDirs
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-publishing {
-    publications {
-        library(MavenPublication) {
-            groupId 'dk.ilios'
-            artifactId 'spanner'
-            version version
-            artifact file("${rootDir}/spanner-library/build/outputs/aar/spanner-library-release.aar")
-            artifact sourcesJar
-            artifact javadocJar
-            pom.withXml {
-                Node root = asNode()
-                root.appendNode('name', 'spanner')
-                root.appendNode('description', 'Spanner is a micro benchmarking library for Android.')
-                root.appendNode('url', 'https://github.com/cmelchior/spanner')
-
-                //Iterate over the compile dependencies (we don't want the test ones),
-                // adding a <dependency> node for each
-                def dependenciesNode = asNode().appendNode('dependencies')
-                configurations.compile.allDependencies.each {
-                    def dependencyNode = dependenciesNode.appendNode('dependency')
-                    dependencyNode.appendNode('groupId', it.group)
-                    dependencyNode.appendNode('artifactId', it.name)
-                    dependencyNode.appendNode('version', it.version)
-                }
-
-                def issues = root.appendNode('issueManagement')
-                issues.appendNode('system', 'github')
-                issues.appendNode('url', 'https://github.com/cmelchior/spanner/issues')
-
-                def scm = root.appendNode('scm')
-                scm.appendNode('url', 'scm:https://github.com/cmelchior/spanner')
-                scm.appendNode('connection', 'scm:git@github.com:cmelchior/spanner.git')
-                scm.appendNode('developerConnection', 'scm:git@github.com:cmelchior/spanner.git')
-
-                def license = root.appendNode('licenses').appendNode('license')
-                license.appendNode('name', 'The Apache Software License, Version 2.0')
-                license.appendNode('url', 'http://www.apache.org/licenses/LICENSE-2.0.txt')
-                license.appendNode('distribution', 'repo')
-            }
-        }
-    }
-}
-
-// SNAPSHOT configuration
-artifactory {
-    contextUrl = 'https://oss.jfrog.org'
-    publish {
-        repository {
-            repoKey = 'oss-snapshot-local'
-            username = project.hasProperty('bintrayUser') ? bintrayUser : 'noUser'
-            password = project.hasProperty('bintrayKey') ? bintrayKey : 'noKey'
-            maven = true
-        }
-        defaults {
-            publishConfigs('library')
-            publishPom = true
-            publishIvy = false
-        }
-    }
-}
-
-// Release configuration
-bintray {
-    // user and key come from the gradle.properties file in ~/.gradle
-    user = project.hasProperty('spannerBintrayUser') ? spannerBintrayUser : System.getenv('SPANNER_BINTRAY_USER')
-    key = project.hasProperty('spannerBintrayKey') ? spannerBintrayKey : System.getenv('SPANNER_BINTRAY_KEY')
-    configurations = ['library']
-    publish = false
-    dryRun = false
-    pkg {
-        repo = 'maven'
-        name = 'spanner'
-        desc = 'Spanner - Microbenchmarks on Android'
-        websiteUrl = 'https://github.com/cmelchior/spanner'
-        issueTrackerUrl = 'https://github.com/cmelchior/spanner/issues'
-        vcsUrl = 'https://github.com/cmelchior/spanner.git'
-        licenses = ['Apache-2.0']
-        labels = ['android', 'spanner', 'benchmark']
-        publicDownloadNumbers = false
-    }
-}
-
-artifacts {
-    archives javadocJar
-    archives sourcesJar
-}
-
-// Configure ch.netzwerg.release plugin
-// See https://github.com/netzwerg/gradle-release-plugin
-release {
-    dependsOn build
-    push = false
-    versionSuffix = '-SNAPSHOT'
-    tagPrefix = 'v'
+    compile 'com.implimentz:unsafe:0.0.2'
+    compile 'org.codehaus.mojo:animal-sniffer-annotations:+'
 }
 
 task checkstyle(type: Checkstyle) {

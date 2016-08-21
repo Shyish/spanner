@@ -28,8 +28,8 @@ import java.util.ListIterator;
  * @author Louis Wasserman
  */
 @GwtCompatible
-public abstract class UnmodifiableListIterator<E> extends UnmodifiableIterator<E>
-    implements ListIterator<E> {
+public abstract class UnmodifiableListIterator<E>
+    extends UnmodifiableIterator<E> implements ListIterator<E> {
   /** Constructor for use by subclasses. */
   protected UnmodifiableListIterator() {}
 
@@ -39,9 +39,7 @@ public abstract class UnmodifiableListIterator<E> extends UnmodifiableIterator<E
    * @throws UnsupportedOperationException always
    * @deprecated Unsupported operation.
    */
-  @Deprecated
-  @Override
-  public final void add(E e) {
+  @Deprecated @Override public final void add(E e) {
     throw new UnsupportedOperationException();
   }
 
@@ -51,9 +49,7 @@ public abstract class UnmodifiableListIterator<E> extends UnmodifiableIterator<E
    * @throws UnsupportedOperationException always
    * @deprecated Unsupported operation.
    */
-  @Deprecated
-  @Override
-  public final void set(E e) {
+  @Deprecated @Override public final void set(E e) {
     throw new UnsupportedOperationException();
   }
 }

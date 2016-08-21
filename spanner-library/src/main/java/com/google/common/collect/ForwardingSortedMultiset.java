@@ -33,10 +33,6 @@ import java.util.NavigableSet;
  * well, either providing your own implementation, or delegating to the provided {@code
  * standardAdd} method.
  *
- * <p><b>{@code default} method warning:</b> This class does <i>not</i> forward calls to {@code
- * default} methods. Instead, it inherits their default implementations. When those implementations
- * invoke methods, they invoke methods on the {@code ForwardingSortedMultiset}.
- *
  * <p>The {@code standard} methods and any collection views they return are not guaranteed to be
  * thread-safe, even when all of the methods that they depend on are thread-safe.
  *
@@ -96,7 +92,8 @@ public abstract class ForwardingSortedMultiset<E> extends ForwardingMultiset<E>
    * In many cases, you may wish to override {@link #descendingMultiset()} to return an instance of
    * a subclass of {@code StandardDescendingMultiset}.
    */
-  protected abstract class StandardDescendingMultiset extends DescendingMultiset<E> {
+  protected abstract class StandardDescendingMultiset
+      extends DescendingMultiset<E> {
     /** Constructor for use by subclasses. */
     public StandardDescendingMultiset() {}
 
@@ -139,7 +136,9 @@ public abstract class ForwardingSortedMultiset<E> extends ForwardingMultiset<E>
    * {@link #firstEntry()} to forward to this implementation.
    */
   protected Entry<E> standardLastEntry() {
-    Iterator<Entry<E>> entryIterator = descendingMultiset().entrySet().iterator();
+    Iterator<Entry<E>> entryIterator = descendingMultiset()
+        .entrySet()
+        .iterator();
     if (!entryIterator.hasNext()) {
       return null;
     }
@@ -182,7 +181,9 @@ public abstract class ForwardingSortedMultiset<E> extends ForwardingMultiset<E>
    * {@link #pollLastEntry()} to forward to this implementation.
    */
   protected Entry<E> standardPollLastEntry() {
-    Iterator<Entry<E>> entryIterator = descendingMultiset().entrySet().iterator();
+    Iterator<Entry<E>> entryIterator = descendingMultiset()
+        .entrySet()
+        .iterator();
     if (!entryIterator.hasNext()) {
       return null;
     }
@@ -220,4 +221,5 @@ public abstract class ForwardingSortedMultiset<E> extends ForwardingMultiset<E>
   public SortedMultiset<E> tailMultiset(E lowerBound, BoundType boundType) {
     return delegate().tailMultiset(lowerBound, boundType);
   }
+
 }

@@ -31,14 +31,14 @@ import java.util.LinkedHashMap;
  * element, those instances are consecutive in the iteration order. If all
  * occurrences of an element are removed, after which that element is added to
  * the multiset, the element will appear at the end of the iteration.
- *
+ * 
  * <p>See the Guava User Guide article on <a href=
- * "https://github.com/google/guava/wiki/NewCollectionTypesExplained#multiset">
+ * "http://code.google.com/p/guava-libraries/wiki/NewCollectionTypesExplained#Multiset">
  * {@code Multiset}</a>.
  *
  * @author Kevin Bourrillion
  * @author Jared Levy
- * @since 2.0
+ * @since 2.0 (imported from Google Collections Library)
  */
 @GwtCompatible(serializable = true, emulated = true)
 @SuppressWarnings("serial") // we're overriding default serialization
@@ -71,8 +71,10 @@ public final class LinkedHashMultiset<E> extends AbstractMapBasedMultiset<E> {
    *
    * @param elements the elements that the multiset should contain
    */
-  public static <E> LinkedHashMultiset<E> create(Iterable<? extends E> elements) {
-    LinkedHashMultiset<E> multiset = create(Multisets.inferDistinctElements(elements));
+  public static <E> LinkedHashMultiset<E> create(
+      Iterable<? extends E> elements) {
+    LinkedHashMultiset<E> multiset =
+        create(Multisets.inferDistinctElements(elements));
     Iterables.addAll(multiset, elements);
     return multiset;
   }
@@ -82,27 +84,30 @@ public final class LinkedHashMultiset<E> extends AbstractMapBasedMultiset<E> {
   }
 
   private LinkedHashMultiset(int distinctElements) {
-    super(Maps.<E, Count>newLinkedHashMapWithExpectedSize(distinctElements));
+    // Could use newLinkedHashMapWithExpectedSize() if it existed
+    super(new LinkedHashMap<E, Count>(Maps.capacity(distinctElements)));
   }
 
   /**
    * @serialData the number of distinct elements, the first element, its count,
    *     the second element, its count, and so on
    */
-  @GwtIncompatible // java.io.ObjectOutputStream
+  @GwtIncompatible("java.io.ObjectOutputStream")
   private void writeObject(ObjectOutputStream stream) throws IOException {
     stream.defaultWriteObject();
     Serialization.writeMultiset(this, stream);
   }
 
-  @GwtIncompatible // java.io.ObjectInputStream
-  private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
+  @GwtIncompatible("java.io.ObjectInputStream")
+  private void readObject(ObjectInputStream stream)
+      throws IOException, ClassNotFoundException {
     stream.defaultReadObject();
     int distinctElements = Serialization.readCount(stream);
-    setBackingMap(new LinkedHashMap<E, Count>());
+    setBackingMap(new LinkedHashMap<E, Count>(
+        Maps.capacity(distinctElements)));
     Serialization.populateMultiset(this, stream, distinctElements);
   }
 
-  @GwtIncompatible // not needed in emulated source
+  @GwtIncompatible("not needed in emulated source")
   private static final long serialVersionUID = 0;
 }

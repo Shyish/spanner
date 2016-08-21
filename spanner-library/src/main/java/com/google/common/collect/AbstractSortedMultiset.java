@@ -17,7 +17,6 @@ package com.google.common.collect;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.google.common.annotations.GwtCompatible;
-import com.google.j2objc.annotations.WeakOuter;
 
 import java.util.Comparator;
 import java.util.Iterator;
@@ -100,11 +99,8 @@ abstract class AbstractSortedMultiset<E> extends AbstractMultiset<E> implements 
   }
 
   @Override
-  public SortedMultiset<E> subMultiset(
-      @Nullable E fromElement,
-      BoundType fromBoundType,
-      @Nullable E toElement,
-      BoundType toBoundType) {
+  public SortedMultiset<E> subMultiset(@Nullable E fromElement, BoundType fromBoundType,
+      @Nullable E toElement, BoundType toBoundType) {
     // These are checked elsewhere, but NullPointerTester wants them checked eagerly.
     checkNotNull(fromBoundType);
     checkNotNull(toBoundType);
@@ -126,8 +122,7 @@ abstract class AbstractSortedMultiset<E> extends AbstractMultiset<E> implements 
   }
 
   SortedMultiset<E> createDescendingMultiset() {
-    @WeakOuter
-    class DescendingMultisetImpl extends DescendingMultiset<E> {
+    return new DescendingMultiset<E>() {
       @Override
       SortedMultiset<E> forwardMultiset() {
         return AbstractSortedMultiset.this;
@@ -142,7 +137,6 @@ abstract class AbstractSortedMultiset<E> extends AbstractMultiset<E> implements 
       public Iterator<E> iterator() {
         return descendingIterator();
       }
-    }
-    return new DescendingMultisetImpl();
+    };
   }
 }

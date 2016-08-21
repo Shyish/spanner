@@ -16,8 +16,6 @@
 
 package com.google.common.collect;
 
-import com.google.common.annotations.GwtIncompatible;
-
 /**
  * "Overrides" the {@link ImmutableSet} static methods that lack
  * {@link ImmutableSortedSet} equivalents with deprecated, exception-throwing
@@ -34,7 +32,6 @@ import com.google.common.annotations.GwtIncompatible;
  *
  * @author Chris Povirk
  */
-@GwtIncompatible
 abstract class ImmutableSortedSetFauxverideShim<E> extends ImmutableSet<E> {
   /**
    * Not supported. Use {@link ImmutableSortedSet#naturalOrder}, which offers
@@ -45,8 +42,7 @@ abstract class ImmutableSortedSetFauxverideShim<E> extends ImmutableSet<E> {
    * @deprecated Use {@link ImmutableSortedSet#naturalOrder}, which offers
    *     better type-safety.
    */
-  @Deprecated
-  public static <E> ImmutableSortedSet.Builder<E> builder() {
+  @Deprecated public static <E> ImmutableSortedSet.Builder<E> builder() {
     throw new UnsupportedOperationException();
   }
 
@@ -59,8 +55,7 @@ abstract class ImmutableSortedSetFauxverideShim<E> extends ImmutableSet<E> {
    * @deprecated <b>Pass a parameter of type {@code Comparable} to use {@link
    *     ImmutableSortedSet#of(Comparable)}.</b>
    */
-  @Deprecated
-  public static <E> ImmutableSortedSet<E> of(E element) {
+  @Deprecated public static <E> ImmutableSortedSet<E> of(E element) {
     throw new UnsupportedOperationException();
   }
 
@@ -73,8 +68,7 @@ abstract class ImmutableSortedSetFauxverideShim<E> extends ImmutableSet<E> {
    * @deprecated <b>Pass the parameters of type {@code Comparable} to use {@link
    *     ImmutableSortedSet#of(Comparable, Comparable)}.</b>
    */
-  @Deprecated
-  public static <E> ImmutableSortedSet<E> of(E e1, E e2) {
+  @Deprecated public static <E> ImmutableSortedSet<E> of(E e1, E e2) {
     throw new UnsupportedOperationException();
   }
 
@@ -87,8 +81,7 @@ abstract class ImmutableSortedSetFauxverideShim<E> extends ImmutableSet<E> {
    * @deprecated <b>Pass the parameters of type {@code Comparable} to use {@link
    *     ImmutableSortedSet#of(Comparable, Comparable, Comparable)}.</b>
    */
-  @Deprecated
-  public static <E> ImmutableSortedSet<E> of(E e1, E e2, E e3) {
+  @Deprecated public static <E> ImmutableSortedSet<E> of(E e1, E e2, E e3) {
     throw new UnsupportedOperationException();
   }
 
@@ -102,8 +95,8 @@ abstract class ImmutableSortedSetFauxverideShim<E> extends ImmutableSet<E> {
    *     ImmutableSortedSet#of(Comparable, Comparable, Comparable, Comparable)}.
    * </b>
    */
-  @Deprecated
-  public static <E> ImmutableSortedSet<E> of(E e1, E e2, E e3, E e4) {
+  @Deprecated public static <E> ImmutableSortedSet<E> of(
+      E e1, E e2, E e3, E e4) {
     throw new UnsupportedOperationException();
   }
 
@@ -117,8 +110,8 @@ abstract class ImmutableSortedSetFauxverideShim<E> extends ImmutableSet<E> {
    *     ImmutableSortedSet#of(
    *     Comparable, Comparable, Comparable, Comparable, Comparable)}. </b>
    */
-  @Deprecated
-  public static <E> ImmutableSortedSet<E> of(E e1, E e2, E e3, E e4, E e5) {
+  @Deprecated public static <E> ImmutableSortedSet<E> of(
+      E e1, E e2, E e3, E e4, E e5) {
     throw new UnsupportedOperationException();
   }
 
@@ -129,11 +122,11 @@ abstract class ImmutableSortedSetFauxverideShim<E> extends ImmutableSet<E> {
    *
    * @throws UnsupportedOperationException always
    * @deprecated <b>Pass the parameters of type {@code Comparable} to use {@link
-   *     ImmutableSortedSet#of(Comparable, Comparable, Comparable, Comparable,
+   *     ImmutableSortedSet#of(Comparable, Comparable, Comparable, Comparable, 
    *     Comparable, Comparable, Comparable...)}. </b>
    */
-  @Deprecated
-  public static <E> ImmutableSortedSet<E> of(E e1, E e2, E e3, E e4, E e5, E e6, E... remaining) {
+  @Deprecated public static <E> ImmutableSortedSet<E> of(
+      E e1, E e2, E e3, E e4, E e5, E e6, E... remaining) {
     throw new UnsupportedOperationException();
   }
 
@@ -146,8 +139,7 @@ abstract class ImmutableSortedSetFauxverideShim<E> extends ImmutableSet<E> {
    * @deprecated <b>Pass parameters of type {@code Comparable} to use {@link
    *     ImmutableSortedSet#copyOf(Comparable[])}.</b>
    */
-  @Deprecated
-  public static <E> ImmutableSortedSet<E> copyOf(E[] elements) {
+  @Deprecated public static <E> ImmutableSortedSet<E> copyOf(E[] elements) {
     throw new UnsupportedOperationException();
   }
 
@@ -162,7 +154,7 @@ abstract class ImmutableSortedSetFauxverideShim<E> extends ImmutableSet<E> {
    * compatibility with that version and with any other compilers that interpret
    * the JLS similarly, there is no definition of copyOf() here, and the
    * definition in ImmutableSortedSet matches that in ImmutableSet.
-   *
+   * 
    * The result is that ImmutableSortedSet.copyOf() may be called on
    * non-Comparable elements. We have not discovered a better solution. In
    * retrospect, the static factory methods should have gone in a separate class

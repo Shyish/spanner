@@ -6,10 +6,10 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
- * the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.google.common.primitives;
@@ -19,7 +19,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.google.common.annotations.Beta;
 import com.google.common.annotations.GwtCompatible;
-import com.google.errorprone.annotations.CanIgnoreReturnValue;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -38,9 +37,9 @@ import java.util.Comparator;
  * {@code int} values. When possible, it is recommended that the {@link UnsignedInteger} wrapper
  * class be used, at a small efficiency penalty, to enforce the distinction in the type system.
  *
- * <p>See the Guava User Guide article on
- * <a href="https://github.com/google/guava/wiki/PrimitivesExplained#unsigned-support">unsigned
- * primitive utilities</a>.
+ * <p>See the Guava User Guide article on <a href=
+ * "http://code.google.com/p/guava-libraries/wiki/PrimitivesExplained#Unsigned_support">
+ * unsigned primitive utilities</a>.
  *
  * @author Louis Wasserman
  * @since 11.0
@@ -63,7 +62,7 @@ public final class UnsignedInts {
    * @param a the first unsigned {@code int} to compare
    * @param b the second unsigned {@code int} to compare
    * @return a negative value if {@code a} is less than {@code b}; a positive value if {@code a} is
-   *     greater than {@code b}; or zero if they are equal
+   *         greater than {@code b}; or zero if they are equal
    */
   public static int compare(int a, int b) {
     return Ints.compare(flip(a), flip(b));
@@ -81,7 +80,7 @@ public final class UnsignedInts {
    *
    * @param array a <i>nonempty</i> array of unsigned {@code int} values
    * @return the value present in {@code array} that is less than or equal to every other value in
-   *     the array according to {@link #compare}
+   *         the array according to {@link #compare}
    * @throws IllegalArgumentException if {@code array} is empty
    */
   public static int min(int... array) {
@@ -101,7 +100,7 @@ public final class UnsignedInts {
    *
    * @param array a <i>nonempty</i> array of unsigned {@code int} values
    * @return the value present in {@code array} that is greater than or equal to every other value
-   *     in the array according to {@link #compare}
+   *         in the array according to {@link #compare}
    * @throws IllegalArgumentException if {@code array} is empty
    */
   public static int max(int... array) {
@@ -120,8 +119,8 @@ public final class UnsignedInts {
    * Returns a string containing the supplied unsigned {@code int} values separated by
    * {@code separator}. For example, {@code join("-", 1, 2, 3)} returns the string {@code "1-2-3"}.
    *
-   * @param separator the text that should appear between consecutive values in the resulting string
-   *     (but not at the start or end)
+   * @param separator the text that should appear between consecutive values in the resulting
+   *        string (but not at the start or end)
    * @param array an array of unsigned {@code int} values, possibly empty
    */
   public static String join(String separator, int... array) {
@@ -140,14 +139,16 @@ public final class UnsignedInts {
   }
 
   /**
-   * Returns a comparator that compares two arrays of unsigned {@code int} values <a
-   * href="http://en.wikipedia.org/wiki/Lexicographical_order">lexicographically</a>. That is, it
-   * compares, using {@link #compare(int, int)}), the first pair of values that follow any common
-   * prefix, or when one array is a prefix of the other, treats the shorter array as the lesser. For
-   * example, {@code [] < [1] < [1, 2] < [2] < [1 << 31]}.
+   * Returns a comparator that compares two arrays of unsigned {@code int} values lexicographically.
+   * That is, it compares, using {@link #compare(int, int)}), the first pair of values that follow
+   * any common prefix, or when one array is a prefix of the other, treats the shorter array as the
+   * lesser. For example, {@code [] < [1] < [1, 2] < [2] < [1 << 31]}.
    *
    * <p>The returned comparator is inconsistent with {@link Object#equals(Object)} (since arrays
    * support only identity equality), but it is consistent with {@link Arrays#equals(int[], int[])}.
+   *
+   * @see <a href="http://en.wikipedia.org/wiki/Lexicographical_order"> Lexicographical order
+   *      article at Wikipedia</a>
    */
   public static Comparator<int[]> lexicographicalComparator() {
     return LexicographicalComparator.INSTANCE;
@@ -165,11 +166,6 @@ public final class UnsignedInts {
         }
       }
       return left.length - right.length;
-    }
-
-    @Override
-    public String toString() {
-      return "UnsignedInts.lexicographicalComparator()";
     }
   }
 
@@ -212,7 +208,6 @@ public final class UnsignedInts {
    * @throws NumberFormatException if the string does not contain a valid unsigned {@code int} value
    * @since 13.0
    */
-  @CanIgnoreReturnValue
   public static int decode(String stringValue) {
     ParseRequest request = ParseRequest.fromString(stringValue);
 
@@ -230,10 +225,9 @@ public final class UnsignedInts {
    * Returns the unsigned {@code int} value represented by the given decimal string.
    *
    * @throws NumberFormatException if the string does not contain a valid unsigned {@code int} value
-   * @throws NullPointerException if {@code s} is null (in contrast to
-   *     {@link Integer#parseInt(String)})
+   * @throws NullPointerException if {@code s} is null 
+   *         (in contrast to {@link Integer#parseInt(String)})
    */
-  @CanIgnoreReturnValue
   public static int parseUnsignedInt(String s) {
     return parseUnsignedInt(s, 10);
   }
@@ -243,19 +237,18 @@ public final class UnsignedInts {
    *
    * @param string the string containing the unsigned integer representation to be parsed.
    * @param radix the radix to use while parsing {@code s}; must be between
-   *     {@link Character#MIN_RADIX} and {@link Character#MAX_RADIX}.
+   *        {@link Character#MIN_RADIX} and {@link Character#MAX_RADIX}.
    * @throws NumberFormatException if the string does not contain a valid unsigned {@code int}, or
-   *     if supplied radix is invalid.
-   * @throws NullPointerException if {@code s} is null (in contrast to
-   *     {@link Integer#parseInt(String)})
+   *         if supplied radix is invalid.
+   * @throws NullPointerException if {@code s} is null 
+   *         (in contrast to {@link Integer#parseInt(String)})
    */
-  @CanIgnoreReturnValue
   public static int parseUnsignedInt(String string, int radix) {
     checkNotNull(string);
     long result = Long.parseLong(string, radix);
     if ((result & INT_MASK) != result) {
-      throw new NumberFormatException(
-          "Input " + string + " in base " + radix + " is not in the range of an unsigned integer");
+      throw new NumberFormatException("Input " + string + " in base " + radix
+          + " is not in the range of an unsigned integer");
     }
     return (int) result;
   }
@@ -268,13 +261,13 @@ public final class UnsignedInts {
   }
 
   /**
-   * Returns a string representation of {@code x} for the given radix, where {@code x} is treated as
-   * unsigned.
+   * Returns a string representation of {@code x} for the given radix, where {@code x} is treated
+   * as unsigned.
    *
    * @param x the value to convert to a string.
    * @param radix the radix to use while working with {@code x}
    * @throws IllegalArgumentException if {@code radix} is not between {@link Character#MIN_RADIX}
-   *     and {@link Character#MAX_RADIX}.
+   *         and {@link Character#MAX_RADIX}.
    */
   public static String toString(int x, int radix) {
     long asLong = x & INT_MASK;

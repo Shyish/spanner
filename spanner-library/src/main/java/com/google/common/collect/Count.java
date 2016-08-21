@@ -37,8 +37,10 @@ final class Count implements Serializable {
     return value;
   }
 
-  public void add(int delta) {
-    value += delta;
+  public int getAndAdd(int delta) {
+    int result = value;
+    value = result + delta;
+    return result;
   }
 
   public int addAndGet(int delta) {

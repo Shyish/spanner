@@ -1,27 +1,28 @@
 /*
  * Copyright (C) 2007 The Guava Authors
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
- * the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.google.common.io;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.google.common.annotations.Beta;
-import com.google.common.annotations.GwtIncompatible;
 
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
+import javax.annotation.Nullable;
 
 /**
  * An {@link InputStream} that counts the number of bytes read.
@@ -30,7 +31,6 @@ import java.io.InputStream;
  * @since 1.0
  */
 @Beta
-@GwtIncompatible
 public final class CountingInputStream extends FilterInputStream {
 
   private long count;
@@ -41,8 +41,8 @@ public final class CountingInputStream extends FilterInputStream {
    *
    * @param in the input stream to be wrapped
    */
-  public CountingInputStream(InputStream in) {
-    super(checkNotNull(in));
+  public CountingInputStream(@Nullable InputStream in) {
+    super(in);
   }
 
   /** Returns the number of bytes read. */
@@ -50,8 +50,7 @@ public final class CountingInputStream extends FilterInputStream {
     return count;
   }
 
-  @Override
-  public int read() throws IOException {
+  @Override public int read() throws IOException {
     int result = in.read();
     if (result != -1) {
       count++;
@@ -59,8 +58,7 @@ public final class CountingInputStream extends FilterInputStream {
     return result;
   }
 
-  @Override
-  public int read(byte[] b, int off, int len) throws IOException {
+  @Override public int read(byte[] b, int off, int len) throws IOException {
     int result = in.read(b, off, len);
     if (result != -1) {
       count += result;
@@ -68,22 +66,19 @@ public final class CountingInputStream extends FilterInputStream {
     return result;
   }
 
-  @Override
-  public long skip(long n) throws IOException {
+  @Override public long skip(long n) throws IOException {
     long result = in.skip(n);
     count += result;
     return result;
   }
 
-  @Override
-  public synchronized void mark(int readlimit) {
+  @Override public synchronized void mark(int readlimit) {
     in.mark(readlimit);
     mark = count;
     // it's okay to mark even if mark isn't supported, as reset won't work
   }
 
-  @Override
-  public synchronized void reset() throws IOException {
+  @Override public synchronized void reset() throws IOException {
     if (!in.markSupported()) {
       throw new IOException("Mark not supported");
     }

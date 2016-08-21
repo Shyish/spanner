@@ -17,7 +17,6 @@
 package com.google.common.collect;
 
 import com.google.common.annotations.GwtCompatible;
-import com.google.j2objc.annotations.WeakOuter;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -53,13 +52,11 @@ final class WellBehavedMap<K, V> extends ForwardingMap<K, V> {
     return new WellBehavedMap<K, V>(delegate);
   }
 
-  @Override
-  protected Map<K, V> delegate() {
+  @Override protected Map<K, V> delegate() {
     return delegate;
   }
 
-  @Override
-  public Set<Entry<K, V>> entrySet() {
+  @Override public Set<Entry<K, V>> entrySet() {
     Set<Entry<K, V>> es = entrySet;
     if (es != null) {
       return es;
@@ -67,7 +64,6 @@ final class WellBehavedMap<K, V> extends ForwardingMap<K, V> {
     return entrySet = new EntrySet();
   }
 
-  @WeakOuter
   private final class EntrySet extends Maps.EntrySet<K, V> {
     @Override
     Map<K, V> map() {

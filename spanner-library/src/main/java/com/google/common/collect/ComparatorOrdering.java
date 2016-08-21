@@ -34,13 +34,11 @@ final class ComparatorOrdering<T> extends Ordering<T> implements Serializable {
     this.comparator = checkNotNull(comparator);
   }
 
-  @Override
-  public int compare(T a, T b) {
+  @Override public int compare(T a, T b) {
     return comparator.compare(a, b);
   }
 
-  @Override
-  public boolean equals(@Nullable Object object) {
+  @Override public boolean equals(@Nullable Object object) {
     if (object == this) {
       return true;
     }
@@ -51,13 +49,11 @@ final class ComparatorOrdering<T> extends Ordering<T> implements Serializable {
     return false;
   }
 
-  @Override
-  public int hashCode() {
+  @Override public int hashCode() {
     return comparator.hashCode();
   }
 
-  @Override
-  public String toString() {
+  @Override public String toString() {
     return comparator.toString();
   }
 
